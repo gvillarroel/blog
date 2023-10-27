@@ -1,0 +1,159 @@
+{
+  "main": {
+    "id": "89117e09de937220",
+    "type": "split",
+    "children": [
+      {
+        "id": "2ba53a1c5e5170df",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f922764fce9917eb",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "AIGuild/Langchain.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "bccdf33727ad4803",
+    "type": "split",
+    "children": [
+      {
+        "id": "84f7cbef6137255b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "8eae3617c0738854",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "16387aeade1515c1",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "ce0a69bfea668ac9",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200,
+    "collapsed": true
+  },
+  "right": {
+    "id": "c3dc07503600fdb7",
+    "type": "split",
+    "children": [
+      {
+        "id": "b859dbfa72bcbaca",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "11f9c8a88cfe8f8b",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "AIGuild/Langchain.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "40f5f55248c5f031",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "AIGuild/Langchain.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "555048d4353fcb36",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "6ef3ef320b2b686c",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "AIGuild/Langchain.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "f922764fce9917eb",
+  "lastOpenFiles": [
+    "AIGuild/Langchain.md",
+    "().md",
+    "images/Langchain features.png",
+    "images",
+    "AIGuild/Untitled",
+    "AIGuild"
+  ]
+}
