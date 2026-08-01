@@ -1,5 +1,5 @@
 import rss from '@astrojs/rss';
-import { getPublishedPosts } from '../lib/posts';
+import { getPublishedPosts } from '../utils/posts';
 
 export async function GET(context) {
   const posts = (await getPublishedPosts()).filter((post) => !post.data.draft);
