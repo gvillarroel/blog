@@ -33,6 +33,7 @@ jobs:
           build-cmd: npm run validate
 
   deploy:
+    if: ${{ !github.event.repository.private }}
     needs: build
     runs-on: ubuntu-latest
     environment:

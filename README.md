@@ -63,8 +63,10 @@ and the privacy boundary.
 
 ## Publish and archive
 
-Pushes to `main` run the official Astro GitHub Pages workflow. GitHub Pages must use
-**GitHub Actions** as its publishing source.
+Pushes to `main` run the official Astro GitHub Pages workflow. Private repositories
+are still validated and built, but deployment is skipped because Pages is not enabled
+for this repository's current plan. Once the repository can use Pages, select
+**GitHub Actions** as its publishing source and rerun the workflow.
 
 After a validated build, create the required timestamped local HTML snapshot with:
 
