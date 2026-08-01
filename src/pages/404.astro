@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Page not found" description="The requested page does not exist.">
+  <section class="hero">
+    <div>
+      <p class="eyebrow">404</p>
+      <h1>This path ends here.</h1>
+    </div>
+    <p class="hero__intro">
+      The note may have moved, remained a draft, or never existed.
+      <a href={import.meta.env.BASE_URL}>Return to the post index.</a>
+    </p>
+  </section>
+</BaseLayout>

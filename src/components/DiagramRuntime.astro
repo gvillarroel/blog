@@ -1,0 +1,203 @@
+<script>
+  const parsePayload = (container: Element): unknown => {
+    const payload = container.querySelector('[data-diagram-payload]');
+    if (!payload?.textContent) throw new Error('Diagram payload is missing.');
+    return JSON.parse(payload.textContent);
+  };
+
+  const showError = (container: Element, error: unknown) => {
+    container.classList.add('diagram--error');
+    const canvas = container.querySelector('.diagram-canvas');
+    if (canvas) {
+      canvas.textContent = 'The diagram could not be rendered. Its source remains available below.';
+    }
+    console.error('Diagram rendering failed', error);
+  };
+
+  const mermaidContainers = [...document.querySelectorAll('[data-diagram="mermaid"]')];
+  if (mermaidContainers.length > 0) {
+    try {
+      const { default: mermaid } = await import('mermaid');
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'strict',
+        theme: 'base',
+        themeVariables: {
+          background: '#0c111b',
+          primaryColor: '#172033',
+          primaryTextColor: '#f3f6fb',
+          primaryBorderColor: '#62d2a2',
+          lineColor: '#91a0b8',
+          secondaryColor: '#182a31',
+          tertiaryColor: '#101827',
+        },
+      });
+      await mermaid.run({
+        nodes: mermaidContainers.flatMap((node) => [
+          ...node.querySelectorAll<HTMLElement>('.mermaid'),
+        ]),
+      });
+    } catch (error) {
+      mermaidContainers.forEach((container) => showError(container, error));
+    }
+  }
+
+  const echartsContainers = [...document.querySelectorAll('[data-diagram="echarts"]')];
+  if (echartsContainers.length > 0) {
+    try {
+      const [echarts, charts, components, renderers] = await Promise.all([
+        import('echarts/core'),
+        import('echarts/charts'),
+        import('echarts/components'),
+        import('echarts/renderers'),
+      ]);
+      echarts.use([
+        charts.BarChart,
+        charts.LineChart,
+        charts.ScatterChart,
+        components.AriaComponent,
+        components.DatasetComponent,
+        components.GridComponent,
+        components.LegendComponent,
+        components.TitleComponent,
+        components.TooltipComponent,
+        renderers.SVGRenderer,
+      ]);
+      echartsContainers.forEach((container) => {
+        try {
+          const canvas = container.querySelector<HTMLElement>('.diagram-canvas');
+          if (!canvas) throw new Error('ECharts canvas is missing.');
+          const option = parsePayload(container) as Record<string, unknown>;
+          const chart = echarts.init(canvas, 'dark', { renderer: 'svg' });
+          chart.setOption({ aria: { enabled: true }, backgroundColor: 'transparent', ...option });
+          const observer = new ResizeObserver(() => chart.resize());
+          observer.observe(canvas);
+        } catch (error) {
+          showError(container, error);
+        }
+      });
+    } catch (error) {
+      echartsContainers.forEach((container) => showError(container, error));
+    }
+  }
+
+  type D3Datum = { label?: string; x?: number; y?: number; value?: number };
+  type D3Spec = {
+    type: 'bar' | 'line' | 'scatter';
+    title?: string;
+    xLabel?: string;
+    yLabel?: string;
+    data: D3Datum[];
+  };
+
+  const d3Containers = [...document.querySelectorAll('[data-diagram="d3"]')];
+  if (d3Containers.length > 0) {
+    try {
+      const d3 = await import('d3');
+      d3Containers.forEach((container) => {
+        try {
+          const canvas = container.querySelector<HTMLElement>('.diagram-canvas');
+          if (!canvas) throw new Error('D3 canvas is missing.');
+          const spec = parsePayload(container) as D3Spec;
+          if (!Array.isArray(spec.data) || !['bar', 'line', 'scatter'].includes(spec.type)) {
+            throw new Error('Unsupported D3 specification.');
+          }
+
+          const width = Math.max(canvas.clientWidth, 640);
+          const height = 400;
+          const margin = { top: 48, right: 28, bottom: 58, left: 62 };
+          const svg = d3
+            .select(canvas)
+            .append('svg')
+            .attr('viewBox', `0 0 ${width} ${height}`)
+            .attr('role', 'img')
+            .attr('aria-label', spec.title ?? `${spec.type} chart`);
+
+          if (spec.title) {
+            svg.append('text').attr('class', 'chart-title').attr('x', margin.left).attr('y', 24).text(spec.title);
+          }
+
+          const plotWidth = width - margin.left - margin.right;
+          const plotHeight = height - margin.top - margin.bottom;
+          const plot = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+          const yValue = (datum: D3Datum) => Number(datum.value ?? datum.y ?? 0);
+          const y = d3
+            .scaleLinear()
+            .domain([0, d3.max(spec.data, yValue) ?? 1])
+            .nice()
+            .range([plotHeight, 0]);
+
+          if (spec.type === 'bar') {
+            const x = d3
+              .scaleBand()
+              .domain(spec.data.map((datum, index) => datum.label ?? String(datum.x ?? index)))
+              .range([0, plotWidth])
+              .padding(0.24);
+            plot
+              .append('g')
+              .attr('transform', `translate(0,${plotHeight})`)
+              .call(d3.axisBottom(x));
+            plot
+              .selectAll('rect')
+              .data(spec.data)
+              .join('rect')
+              .attr('x', (datum, index) => x(datum.label ?? String(datum.x ?? index)) ?? 0)
+              .attr('y', (datum) => y(yValue(datum)))
+              .attr('width', x.bandwidth())
+              .attr('height', (datum) => plotHeight - y(yValue(datum)))
+              .attr('rx', 4);
+          } else {
+            const xValue = (datum: D3Datum, index: number) => Number(datum.x ?? index);
+            const x = d3
+              .scaleLinear()
+              .domain(d3.extent(spec.data, xValue) as [number, number])
+              .nice()
+              .range([0, plotWidth]);
+            plot
+              .append('g')
+              .attr('transform', `translate(0,${plotHeight})`)
+              .call(d3.axisBottom(x));
+            if (spec.type === 'line') {
+              plot
+                .append('path')
+                .datum(spec.data)
+                .attr('class', 'chart-line')
+                .attr(
+                  'd',
+                  d3
+                    .line<D3Datum>()
+                    .x((datum, index) => x(xValue(datum, index)))
+                    .y((datum) => y(yValue(datum))),
+                );
+            }
+            plot
+              .selectAll('circle')
+              .data(spec.data)
+              .join('circle')
+              .attr('cx', (datum, index) => x(xValue(datum, index)))
+              .attr('cy', (datum) => y(yValue(datum)))
+              .attr('r', 5);
+          }
+
+          plot.append('g').call(d3.axisLeft(y));
+          if (spec.xLabel) {
+            svg.append('text').attr('class', 'axis-label').attr('x', margin.left + plotWidth / 2).attr('y', height - 8).text(spec.xLabel);
+          }
+          if (spec.yLabel) {
+            svg
+              .append('text')
+              .attr('class', 'axis-label')
+              .attr('transform', 'rotate(-90)')
+              .attr('x', -(margin.top + plotHeight / 2))
+              .attr('y', 16)
+              .text(spec.yLabel);
+          }
+        } catch (error) {
+          showError(container, error);
+        }
+      });
+    } catch (error) {
+      d3Containers.forEach((container) => showError(container, error));
+    }
+  }
+</script>

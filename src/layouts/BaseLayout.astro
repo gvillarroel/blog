@@ -1,0 +1,62 @@
+---
+import DiagramRuntime from '../components/DiagramRuntime.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  canonicalUrl?: string;
+}
+
+const {
+  title = 'Guillermo Villarroel — Technical Notes',
+  description = 'Evidence-grounded notes on software engineering and data science.',
+  canonicalUrl,
+} = Astro.props;
+const pageTitle = title.includes('Guillermo Villarroel')
+  ? title
+  : `${title} — Guillermo Villarroel`;
+const canonical = canonicalUrl ?? new URL(Astro.url.pathname, Astro.site).toString();
+const homeHref = import.meta.env.BASE_URL;
+const feedHref = new URL(`${import.meta.env.BASE_URL}rss.xml`, Astro.site).toString();
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0c111b" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" type="application/rss+xml" title="Technical Notes" href={feedHref} />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#content">Skip to content</a>
+    <header class="site-header">
+      <a class="wordmark" href={homeHref} aria-label="Technical Notes home">
+        <span class="wordmark__mark" aria-hidden="true">GV</span>
+        <span>Technical Notes</span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a href={homeHref}>Posts</a>
+        <a href={feedHref}>RSS</a>
+      </nav>
+    </header>
+    <main id="content">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <p>Distilled from multiple sources. Claims remain traceable to their references.</p>
+    </footer>
+    <DiagramRuntime />
+  </body>
+</html>

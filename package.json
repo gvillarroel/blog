@@ -1,0 +1,41 @@
+{
+  "name": "gvillarroel-technical-blog",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "check": "astro check",
+    "test": "node --test tests/diagram-fences.test.mjs",
+    "build": "astro build",
+    "verify:build": "node scripts/verify-build.mjs",
+    "validate": "npm run check && npm run test && npm run build && npm run verify:build",
+    "knowledge:bootstrap": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/bootstrap-knowledge.ps1",
+    "knowledge:query": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/query-expert.ps1",
+    "archive": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/archive-build.ps1"
+  },
+  "dependencies": {
+    "@astrojs/rss": "4.0.19",
+    "@astrojs/markdown-remark": "7.2.1",
+    "@astrojs/sitemap": "3.7.3",
+    "d3": "7.9.0",
+    "echarts": "6.1.0",
+    "mermaid": "11.16.0",
+    "sharp": "0.35.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.9",
+    "astro": "7.0.9",
+    "plantuml-cli": "1.2026.1",
+    "typescript": "6.0.3"
+  },
+  "overrides": {
+    "astro": {
+      "sharp": "0.35.3"
+    }
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}

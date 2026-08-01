@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPublishedPosts, postHref } from '../lib/posts';
+
+const posts = await getPublishedPosts();
+const previewMode = !import.meta.env.PROD;
+const dateFormatter = new Intl.DateTimeFormat('en', {
+  year: 'numeric',
+  month: 'short',
+  day: '2-digit',
+  timeZone: 'UTC',
+});
+---
+
+<BaseLayout>
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Software engineering · Data science</p>
+      <h1>Technical ideas, reduced to their durable core.</h1>
+    </div>
+    <p class="hero__intro">
+      Essays built from curated expert corpora and primary sources, with explicit
+      trade-offs, evidence, and room for uncertainty.
+    </p>
+  </section>
+
+  <section class="post-index" aria-labelledby="post-index-title">
+    <div class="section-heading">
+      <h2 id="post-index-title">{previewMode ? 'Local preview' : 'Published notes'}</h2>
+      <span>{posts.length.toString().padStart(2, '0')}</span>
+    </div>
+    {
+      posts.length > 0 ? (
+        <ol class="post-list">
+          {posts.map((post) => (
+            <li class="post-card">
+              <time datetime={post.data.pubDate.toISOString()}>
+                {dateFormatter.format(post.data.pubDate)}
+              </time>
+              <div>
+                <h3>
+                  <a href={postHref(post)}>{post.data.title}</a>
+                  {previewMode && post.data.draft && <span class="post-card__draft">Draft</span>}
+                </h3>
+                <p>{post.data.summary}</p>
+              </div>
+              <span class="post-card__tags">{post.data.tags.slice(0, 2).join(' / ')}</span>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p class="empty-state">
+          The publishing system is ready. The first evidence-grounded notes are being distilled.
+        </p>
+      )
+    }
+  </section>
+</BaseLayout>

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "1.0",
+  "sourceRepository": "../knowledge",
+  "experts": [
+    {
+      "id": "software-engineering",
+      "title": "Software engineering expert corpus",
+      "description": "Eighteen private books covering architecture, design, delivery, requirements, APIs, concurrency, testing, and performance.",
+      "localBundle": "knowledge/expert-sources/software-engineering",
+      "sourceBundle": "evaluations/software-architecture-books/generated/all-routes-20260730-01/bundles/classical",
+      "querySkill": "skills/consult-semantic-okf-classical",
+      "policy": "fusion",
+      "benchmark": {
+        "questions": 40,
+        "topK": 10,
+        "recall": 0.9729,
+        "ndcg": 0.9258,
+        "fullCoverage": 0.925
+      }
+    },
+    {
+      "id": "data-science",
+      "title": "Data science, AI, and ML expert corpus",
+      "description": "Thirty-eight private books covering data science, data engineering, statistics, ML, generative AI, privacy, SQL, and production systems.",
+      "localBundle": "knowledge/expert-sources/data-science",
+      "sourceBundle": "evaluations/data-science-ai-ml-books/generated/all-routes-20260730-02/bundles/ensemble",
+      "querySkill": "skills/consult-semantic-okf-ensemble",
+      "policy": "fast",
+      "benchmark": {
+        "questions": 40,
+        "topK": 10,
+        "recall": 0.9917,
+        "ndcg": 0.9444,
+        "fullCoverage": 0.975
+      }
+    }
+  ]
+}
