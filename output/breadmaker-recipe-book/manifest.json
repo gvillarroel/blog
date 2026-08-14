@@ -1,0 +1,87 @@
+{
+  "title": "Home Bakery Virtuoso Plus Recipe Book",
+  "models": [
+    "BB-PDC20",
+    "BB-PPC20"
+  ],
+  "source": {
+    "url": "https://cdn.shopify.com/s/files/1/0348/3467/7900/files/BBPDC_BBPPC_Recipe_en.pdf?v=1781305903",
+    "localPath": "../pdf/BBPDC_BBPPC_Recipe_en.pdf",
+    "sha256": "B7755710189F1D6A7C8A5FB890062079FB6D3A4B7D1E1BCC5813581B0EEC8CDE",
+    "bytes": 6441647,
+    "pdfPages": 36,
+    "uniqueSourceImages": 18,
+    "uniqueInteriorSpreads": 17,
+    "encrypted": false
+  },
+  "conversion": {
+    "date": "2026-08-10",
+    "language": "en",
+    "markdown": "BBPDC_BBPPC_Recipe_en.md",
+    "logicalPageFacsimiles": 35,
+    "facsimileDirectory": "assets/pages"
+  },
+  "comparison": {
+    "language": "es",
+    "markdown": "comparativa-original-vs-maquina.es.md",
+    "breadRecipes": 37,
+    "relatedDoughAndBakingRecipes": 6,
+    "breadRecipeNumbers": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      37,
+      43,
+      44,
+      45,
+      46,
+      50
+    ],
+    "relatedRecipeNumbers": [
+      32,
+      33,
+      34,
+      35,
+      36,
+      40
+    ]
+  },
+  "conversionMethod": {
+    "language": "es",
+    "guide": "guia-transformacion-recetas-panificadora.es.md",
+    "worksheet": "plantilla-conversion-receta.es.md",
+    "machineModels": [
+      "BB-PDC20",
+      "BB-PPC20"
+    ],
+    "evidencePairs": 10
+  }
+}
