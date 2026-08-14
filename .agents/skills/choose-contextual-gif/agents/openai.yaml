@@ -1,0 +1,4 @@
+interface:
+  display_name: "Choose a Contextual GIF"
+  short_description: "Pick, explain, or download a context-safe GIF"
+  default_prompt: "Use $choose-contextual-gif to choose a context-appropriate GIF and download it only when I explicitly request a permitted local copy."
