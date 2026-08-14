@@ -12,6 +12,8 @@ or machine learning.
 
 - Read `knowledge/catalog.json` before choosing a corpus or retrieval policy.
 - Run `scripts/bootstrap-knowledge.ps1` when the local expert folders are absent.
+- Treat `.know/` as the project-local domain registry. Use `know list keys` and
+  `know list sources --key <DOMAIN>` to inspect it after bootstrap.
 - Treat `knowledge/expert-sources/` as immutable private input. Never edit, copy into a
   tracked path, commit, publish, or attach its contents.
 - Use `scripts/query-expert.ps1`; do not bypass its domain-specific policy.

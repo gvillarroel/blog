@@ -26,7 +26,14 @@ if (index.includes('LangChain: a framework map')) {
 
 const trackedPrivate = execFileSync(
   'git',
-  ['ls-files', 'knowledge/expert-sources', 'knowledge/private-sources', '*.pdf', '*.epub'],
+  [
+    'ls-files',
+    '.know',
+    'knowledge/expert-sources',
+    'knowledge/private-sources',
+    '*.pdf',
+    '*.epub',
+  ],
   { cwd: root, encoding: 'utf8' },
 ).trim();
 if (trackedPrivate) {

@@ -8,9 +8,55 @@ This repository stores technical blog content and supporting assets.
 ## Knowledge Workflow
 - Read `knowledge/catalog.json` before researching a post.
 - Use `.agents/skills/consult-expert-knowledge/SKILL.md` for software-engineering and data-science research.
-- Treat `knowledge/expert-sources/` and `knowledge/.store/` as immutable, private, ignored inputs.
+- Treat `knowledge/expert-sources/` and `.know/` as immutable, private, ignored inputs.
 - Never commit, publish, attach, or copy private corpus text into a tracked path.
 - Retrieval rankings are discovery signals; verify claims against returned authoritative text, identities, locators, and hashes.
+
+### Initialize the private domains
+
+Run this once after cloning the blog, after rebuilding either private corpus, or when
+`.know/` or `knowledge/expert-sources/` is absent:
+
+```powershell
+npm run knowledge:bootstrap
+```
+
+The bootstrap command creates two project-local knowledge domains:
+
+- `software-engineering`: 18 private PDF books, queried with classical fusion.
+- `data-science`: 38 private EPUB books across the `ds` and `ai-ml` source partitions,
+  queried with ensemble fast retrieval.
+
+Inspect the local registry from the repository root or any descendant directory:
+
+```powershell
+know list keys
+know list sources --key software-engineering
+know list sources --key data-science
+```
+
+If the installed `know` predates project-local `.know` discovery, use
+`know --store ./.know ...` until the CLI is upgraded.
+
+### Validate and query the domains
+
+After bootstrap or a corpus refresh, validate both immutable bundles deeply:
+
+```powershell
+./scripts/query-expert.ps1 -Domain software-engineering -Inspect -DeepValidation
+./scripts/query-expert.ps1 -Domain data-science -Inspect -DeepValidation
+```
+
+Research with a complete question rather than keywords:
+
+```powershell
+./scripts/query-expert.ps1 -Domain software-engineering -Query "How should service boundaries respond to volatility?" -TopK 10
+./scripts/query-expert.ps1 -Domain data-science -Query "What failure modes recur in production ML pipelines?" -TopK 10
+```
+
+Open the returned authoritative concept or source path before using a claim. Preserve
+the returned source identity, locator, and hash in research notes. Do not treat a
+ranking score, topic, entity, association, or graph edge as evidence by itself.
 
 ## Content Workflow
 - Store posts as Markdown under `src/content/posts/`.

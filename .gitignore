@@ -177,6 +177,7 @@ Thumbs.db
 /knowledge/expert-sources/
 /knowledge/private-sources/
 /knowledge/.store/
+/.know/
 /.knowledge-store-probe/
 
 # Defensive rules for any future private corpus layout

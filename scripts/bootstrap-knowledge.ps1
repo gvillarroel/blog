@@ -7,7 +7,7 @@ $catalogPath = Join-Path $projectRoot 'knowledge\catalog.json'
 $catalog = Get-Content -Raw -LiteralPath $catalogPath | ConvertFrom-Json
 $sourceRepository = (Resolve-Path -LiteralPath (Join-Path $projectRoot $catalog.sourceRepository)).Path
 $localRoot = Join-Path $projectRoot 'knowledge\expert-sources'
-$store = Join-Path $projectRoot 'knowledge\.store'
+$store = Join-Path $projectRoot '.know'
 $know = Get-Command know -CommandType Application -ErrorAction Stop | Select-Object -First 1
 
 New-Item -ItemType Directory -Path $localRoot -Force | Out-Null
