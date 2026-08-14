@@ -82,7 +82,7 @@
   }
 
   type D3Datum = { label?: string; x?: number; y?: number; value?: number };
-  type D3Spec = {
+  type BasicD3Spec = {
     type: 'bar' | 'line' | 'scatter';
     title?: string;
     xLabel?: string;
@@ -90,107 +90,650 @@
     data: D3Datum[];
   };
 
+  type AnnualMilestoneKind = 'paper' | 'book' | 'concept' | 'pattern' | 'practice' | 'protocol';
+  type AnnualMilestone = {
+    year: number;
+    domain: string;
+    category: string;
+    title: string;
+    note: string;
+    url?: string;
+    kind: AnnualMilestoneKind;
+  };
+  type AnnualHeatmapSpec = {
+    type: 'annual-milestone-heatmap';
+    title: string;
+    description: string;
+    yearStart: number;
+    yearEnd: number;
+    domains: string[];
+    booksAudited: number;
+    initial?: { year: number; domain: string };
+    data: AnnualMilestone[];
+  };
+
+  type LineageNode = {
+    year: number;
+    label: string;
+    url?: string;
+  };
+  type LineageBranch = {
+    label: string;
+    nodes: LineageNode[];
+  };
+  type ConceptLineageSpec = {
+    type: 'concept-lineage';
+    title: string;
+    description: string;
+    target: { title: string; subtitle: string };
+    branches: LineageBranch[];
+  };
+
+  type D3Spec = BasicD3Spec | AnnualHeatmapSpec | ConceptLineageSpec;
+  type D3Module = typeof import('d3');
+  type AnnualHeatmapCell = {
+    decade: number;
+    panelIndex: number;
+    inRange: boolean;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    year: number;
+    domain: string;
+    milestones: AnnualMilestone[];
+  };
+  const safeHref = (value?: string) => {
+    if (!value) return undefined;
+    if (value.startsWith('#')) return value;
+    try {
+      const parsed = new URL(value, window.location.href);
+      return ['http:', 'https:'].includes(parsed.protocol) ? parsed.toString() : undefined;
+    } catch {
+      return undefined;
+    }
+  };
+
+  const renderBasicD3 = (d3: D3Module, canvas: HTMLElement, spec: BasicD3Spec) => {
+    if (!Array.isArray(spec.data)) throw new Error('D3 chart data is missing.');
+
+    const width = Math.max(canvas.clientWidth, 640);
+    const height = 400;
+    const margin = { top: 48, right: 28, bottom: 58, left: 62 };
+    const svg = d3
+      .select(canvas)
+      .append('svg')
+      .attr('viewBox', `0 0 ${width} ${height}`)
+      .attr('role', 'img')
+      .attr('aria-label', spec.title ?? `${spec.type} chart`);
+
+    if (spec.title) {
+      svg.append('text').attr('class', 'chart-title').attr('x', margin.left).attr('y', 24).text(spec.title);
+    }
+
+    const plotWidth = width - margin.left - margin.right;
+    const plotHeight = height - margin.top - margin.bottom;
+    const plot = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+    const yValue = (datum: D3Datum) => Number(datum.value ?? datum.y ?? 0);
+    const y = d3
+      .scaleLinear()
+      .domain([0, d3.max(spec.data, yValue) ?? 1])
+      .nice()
+      .range([plotHeight, 0]);
+
+    if (spec.type === 'bar') {
+      const x = d3
+        .scaleBand()
+        .domain(spec.data.map((datum, index) => datum.label ?? String(datum.x ?? index)))
+        .range([0, plotWidth])
+        .padding(0.24);
+      plot
+        .append('g')
+        .attr('transform', `translate(0,${plotHeight})`)
+        .call(d3.axisBottom(x));
+      plot
+        .selectAll('rect')
+        .data(spec.data)
+        .join('rect')
+        .attr('x', (datum, index) => x(datum.label ?? String(datum.x ?? index)) ?? 0)
+        .attr('y', (datum) => y(yValue(datum)))
+        .attr('width', x.bandwidth())
+        .attr('height', (datum) => plotHeight - y(yValue(datum)))
+        .attr('rx', 4);
+    } else {
+      const xValue = (datum: D3Datum, index: number) => Number(datum.x ?? index);
+      const x = d3
+        .scaleLinear()
+        .domain(d3.extent(spec.data, xValue) as [number, number])
+        .nice()
+        .range([0, plotWidth]);
+      plot
+        .append('g')
+        .attr('transform', `translate(0,${plotHeight})`)
+        .call(d3.axisBottom(x));
+      if (spec.type === 'line') {
+        plot
+          .append('path')
+          .datum(spec.data)
+          .attr('class', 'chart-line')
+          .attr(
+            'd',
+            d3
+              .line<D3Datum>()
+              .x((datum, index) => x(xValue(datum, index)))
+              .y((datum) => y(yValue(datum))),
+          );
+      }
+      plot
+        .selectAll('circle')
+        .data(spec.data)
+        .join('circle')
+        .attr('cx', (datum, index) => x(xValue(datum, index)))
+        .attr('cy', (datum) => y(yValue(datum)))
+        .attr('r', 5);
+    }
+
+    plot.append('g').call(d3.axisLeft(y));
+    if (spec.xLabel) {
+      svg.append('text').attr('class', 'axis-label').attr('x', margin.left + plotWidth / 2).attr('y', height - 8).text(spec.xLabel);
+    }
+    if (spec.yLabel) {
+      svg
+        .append('text')
+        .attr('class', 'axis-label')
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -(margin.top + plotHeight / 2))
+        .attr('y', 16)
+        .text(spec.yLabel);
+    }
+  };
+
+  const renderAnnualHeatmap = (
+    d3: D3Module,
+    canvas: HTMLElement,
+    spec: AnnualHeatmapSpec,
+    diagramIndex: number,
+  ) => {
+    if (
+      !Array.isArray(spec.data) ||
+      !Array.isArray(spec.domains) ||
+      spec.domains.length === 0 ||
+      !Number.isInteger(spec.yearStart) ||
+      !Number.isInteger(spec.yearEnd) ||
+      spec.yearStart > spec.yearEnd
+    ) {
+      throw new Error('Annual milestone heatmap data is incomplete.');
+    }
+
+    const kindLabels: Record<AnnualMilestoneKind, string> = {
+      paper: 'paper or report',
+      book: 'book',
+      concept: 'named concept',
+      pattern: 'pattern',
+      practice: 'practice',
+      protocol: 'protocol',
+    };
+    const idPrefix = `annual-milestone-heatmap-${diagramIndex}`;
+    const startDecade = Math.floor(spec.yearStart / 10) * 10;
+    const endDecade = Math.floor(spec.yearEnd / 10) * 10;
+    const decades = d3.range(startDecade, endDecade + 1, 10);
+    const panelColumns = 3;
+    const panelRows = Math.ceil(decades.length / panelColumns);
+    const width = 1260;
+    const outer = { top: 78, right: 20, bottom: 66, left: 20 };
+    const panelGapX = 22;
+    const panelGapY = 22;
+    const panelWidth = (width - outer.left - outer.right - panelGapX * (panelColumns - 1)) / panelColumns;
+    const labelWidth = 98;
+    const yearStep = (panelWidth - labelWidth) / 10;
+    const cellWidth = Math.max(18, yearStep - 2);
+    const cellHeight = 28;
+    const rowStep = 36;
+    const panelHeader = 39;
+    const panelHeight = panelHeader + spec.domains.length * rowStep + 10;
+    const legendY = outer.top + panelRows * panelHeight + (panelRows - 1) * panelGapY + 22;
+    const height = legendY + outer.bottom;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const domainOrder = new Map(spec.domains.map((domain, index) => [domain, index]));
+
+    canvas.replaceChildren();
+    canvas.classList.add('diagram-canvas--interactive');
+    canvas.setAttribute('role', 'group');
+    canvas.setAttribute('aria-label', spec.title);
+
+    const frame = d3.select(canvas).append('div').attr('class', 'annual-heatmap');
+    frame
+      .append('p')
+      .attr('class', 'diagram-scroll-hint')
+      .attr('aria-hidden', 'true')
+      .text('Scroll horizontally to inspect every year');
+    const scroller = frame.append('div').attr('class', 'diagram-scroll-frame');
+    const svg = scroller
+      .append('svg')
+      .attr('class', 'annual-heatmap__svg')
+      .attr('viewBox', `0 0 ${width} ${height}`)
+      .attr('aria-labelledby', `${idPrefix}-title ${idPrefix}-desc`)
+      .attr('role', 'img');
+    svg.append('title').attr('id', `${idPrefix}-title`).text(spec.title);
+    svg.append('desc').attr('id', `${idPrefix}-desc`).text(spec.description);
+    svg.append('text').attr('class', 'chart-title').attr('x', 20).attr('y', 25).text(spec.title);
+    svg
+      .append('text')
+      .attr('class', 'chart-kicker')
+      .attr('x', 20)
+      .attr('y', 48)
+      .text(`${spec.data.length} first-dated milestones - ${spec.booksAudited} local books audited`);
+
+    const panelLayer = svg.append('g').attr('class', 'annual-heatmap__panels');
+    decades.forEach((decade, panelIndex) => {
+      const panelColumn = panelIndex % panelColumns;
+      const panelRow = Math.floor(panelIndex / panelColumns);
+      const panelX = outer.left + panelColumn * (panelWidth + panelGapX);
+      const panelY = outer.top + panelRow * (panelHeight + panelGapY);
+      const panel = panelLayer
+        .append('g')
+        .attr('class', 'annual-heatmap__panel')
+        .attr('transform', `translate(${panelX},${panelY})`);
+      panel.append('rect').attr('class', 'annual-heatmap__panel-bg').attr('width', panelWidth).attr('height', panelHeight).attr('rx', 9);
+      panel.append('text').attr('class', 'annual-heatmap__decade').attr('x', 10).attr('y', 23).text(`${decade}s`);
+      d3.range(decade, decade + 10).forEach((year, yearIndex) => {
+        panel
+          .append('text')
+          .attr('class', 'annual-heatmap__year')
+          .attr('x', labelWidth + yearIndex * yearStep + cellWidth / 2)
+          .attr('y', 28)
+          .attr('text-anchor', 'middle')
+          .text(year);
+      });
+      spec.domains.forEach((domain, domainIndex) => {
+        panel
+          .append('text')
+          .attr('class', 'annual-heatmap__domain')
+          .attr('x', labelWidth - 8)
+          .attr('y', panelHeader + domainIndex * rowStep + cellHeight / 2)
+          .attr('dy', '0.35em')
+          .attr('text-anchor', 'end')
+          .text(domain);
+      });
+    });
+
+    const cells: AnnualHeatmapCell[] = decades.flatMap((decade, panelIndex) => {
+      const panelColumn = panelIndex % panelColumns;
+      const panelRow = Math.floor(panelIndex / panelColumns);
+      const panelX = outer.left + panelColumn * (panelWidth + panelGapX);
+      const panelY = outer.top + panelRow * (panelHeight + panelGapY);
+      return spec.domains.flatMap((domain, domainIndex) =>
+        d3.range(decade, decade + 10).map((year, yearIndex) => ({
+          decade,
+          panelIndex,
+          inRange: year >= spec.yearStart && year <= spec.yearEnd,
+          x: panelX + labelWidth + yearIndex * yearStep,
+          y: panelY + panelHeader + domainIndex * rowStep,
+          width: cellWidth,
+          height: cellHeight,
+          year,
+          domain,
+          milestones: spec.data
+            .filter((milestone) => milestone.year === year && milestone.domain === domain)
+            .sort((left, right) => left.title.localeCompare(right.title)),
+        })),
+      );
+    });
+    const color = d3
+      .scaleThreshold<number, string>()
+      .domain([1, 2, 3, 4])
+      .range(['#172033', '#21483f', '#34775f', '#469a73', '#62d2a2']);
+    const cellGroups = svg
+      .append('g')
+      .attr('class', 'annual-heatmap__cells')
+      .selectAll<SVGGElement, AnnualHeatmapCell>('.heatmap-cell')
+      .data(cells, (cell) => `${cell.domain}-${cell.year}`)
+      .join('g')
+      .attr('class', 'heatmap-cell')
+      .attr('data-out-of-range', (cell) => (cell.inRange ? null : 'true'))
+      .attr('transform', (cell) => `translate(${cell.x},${cell.y})`)
+      .attr('role', (cell) => (cell.milestones.length > 0 ? 'button' : null))
+      .attr('aria-hidden', (cell) => (cell.milestones.length > 0 ? null : 'true'))
+      .attr('tabindex', (cell) => (cell.milestones.length > 0 ? 0 : -1))
+      .attr('aria-label', (cell) => {
+        if (cell.milestones.length === 0) return null;
+        return `${cell.domain}, ${cell.year}: ${cell.milestones.length} milestone${cell.milestones.length === 1 ? '' : 's'}. Activate to inspect.`;
+      });
+    cellGroups.append('title').text((cell) => {
+      if (!cell.inRange) return `${cell.year}: outside audit window`;
+      return `${cell.year} - ${cell.domain}: ${cell.milestones.length}`;
+    });
+    cellGroups
+      .append('rect')
+      .attr('width', (cell) => cell.width)
+      .attr('height', (cell) => cell.height)
+      .attr('rx', 4)
+      .style('fill', (cell) => (cell.inRange ? color(cell.milestones.length) : '#0c111b'));
+    cellGroups
+      .append('text')
+      .attr('x', (cell) => cell.width / 2)
+      .attr('y', (cell) => cell.height / 2)
+      .attr('dy', '0.36em')
+      .attr('text-anchor', 'middle')
+      .text((cell) => (cell.inRange ? (cell.milestones.length > 0 ? cell.milestones.length : '·') : ''));
+
+    if (!reduceMotion) {
+      cellGroups.attr('opacity', 0).transition().delay((_, index) => index * 3).duration(220).attr('opacity', 1);
+    }
+
+    const legend = svg.append('g').attr('class', 'heatmap-legend').attr('transform', `translate(${outer.left},${legendY})`);
+    [0, 1, 2, 3, 4].forEach((count, index) => {
+      const item = legend.append('g').attr('transform', `translate(${index * 69},0)`);
+      item.append('rect').attr('width', 18).attr('height', 18).attr('rx', 4).style('fill', color(count));
+      item.append('text').attr('x', 24).attr('y', 13).text(count === 4 ? '4+' : String(count));
+    });
+    legend
+      .append('text')
+      .attr('class', 'legend-caption')
+      .attr('x', 365)
+      .attr('y', 13)
+      .text('distinct first-dated milestones - not publication volume or importance');
+
+    const detail = document.createElement('section');
+    detail.className = 'annual-heatmap__detail';
+    detail.setAttribute('aria-live', 'polite');
+    frame.node()?.append(detail);
+
+    const appendLinkedTitle = (container: HTMLElement, milestone: AnnualMilestone) => {
+      const href = safeHref(milestone.url);
+      if (!href) {
+        container.textContent = milestone.title;
+        return;
+      }
+      const link = document.createElement('a');
+      link.href = href;
+      link.textContent = milestone.title;
+      if (!href.startsWith('#')) {
+        link.target = '_blank';
+        link.rel = 'noreferrer';
+      }
+      container.append(link);
+    };
+
+    const updateDetail = (cell: AnnualHeatmapCell) => {
+      detail.replaceChildren();
+      const eyebrow = document.createElement('p');
+      eyebrow.className = 'annual-heatmap__selection';
+      eyebrow.textContent = `${cell.year} - ${cell.domain}`;
+      const heading = document.createElement('h3');
+      heading.textContent = `${cell.milestones.length} first-dated milestone${cell.milestones.length === 1 ? '' : 's'}`;
+      const list = document.createElement('ol');
+      cell.milestones.forEach((milestone) => {
+        const item = document.createElement('li');
+        const meta = document.createElement('span');
+        meta.className = `milestone-kind milestone-kind--${milestone.kind}`;
+        meta.textContent = `${kindLabels[milestone.kind]} - ${milestone.category}`;
+        const title = document.createElement('strong');
+        appendLinkedTitle(title, milestone);
+        const note = document.createElement('p');
+        note.textContent = milestone.note;
+        item.append(meta, title, note);
+        list.append(item);
+      });
+      detail.append(eyebrow, heading, list);
+      cellGroups.attr('data-selected', (candidate) =>
+        candidate.year === cell.year && candidate.domain === cell.domain ? 'true' : null,
+      );
+    };
+
+    const activate = (cell: AnnualHeatmapCell) => {
+      if (cell.milestones.length > 0) updateDetail(cell);
+    };
+    cellGroups
+      .on('click', (_, cell) => activate(cell))
+      .on('keydown', (event: KeyboardEvent, cell) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          activate(cell);
+        }
+      });
+
+    const requested = spec.initial
+      ? cells.find((cell) => cell.year === spec.initial?.year && cell.domain === spec.initial?.domain)
+      : undefined;
+    const initial = requested?.milestones.length ? requested : cells.find((cell) => cell.milestones.length > 0);
+    if (initial) updateDetail(initial);
+
+    const inventory = document.createElement('details');
+    inventory.className = 'annual-heatmap__inventory';
+    inventory.open = true;
+    const summary = document.createElement('summary');
+    summary.textContent = `Full annual inventory - ${spec.data.length} milestones`;
+    const auditNote = document.createElement('p');
+    auditNote.className = 'annual-heatmap__audit-note';
+    auditNote.textContent = `Discovery scope: all ${spec.booksAudited} books in the two local expert corpora. Public entries were de-duplicated and dated against the linked primary or first-party source.`;
+    const tableFrame = document.createElement('div');
+    tableFrame.className = 'annual-heatmap__table-frame';
+    const table = document.createElement('table');
+    const caption = document.createElement('caption');
+    caption.textContent = 'First public date for every milestone counted in the annual heatmap';
+    const head = document.createElement('thead');
+    const headRow = document.createElement('tr');
+    ['Year', 'Track', 'Theme', 'Type', 'Milestone', 'Why it matters'].forEach((label) => {
+      const cell = document.createElement('th');
+      cell.scope = 'col';
+      cell.textContent = label;
+      headRow.append(cell);
+    });
+    head.append(headRow);
+    const body = document.createElement('tbody');
+    const sortedMilestones = [...spec.data].sort(
+      (left, right) =>
+        left.year - right.year ||
+        (domainOrder.get(left.domain) ?? 0) - (domainOrder.get(right.domain) ?? 0) ||
+        left.title.localeCompare(right.title),
+    );
+    sortedMilestones.forEach((milestone) => {
+      const row = document.createElement('tr');
+      const values = [String(milestone.year), milestone.domain, milestone.category, kindLabels[milestone.kind]];
+      values.forEach((value) => {
+        const cell = document.createElement('td');
+        cell.textContent = value;
+        row.append(cell);
+      });
+      const titleCell = document.createElement('td');
+      appendLinkedTitle(titleCell, milestone);
+      const noteCell = document.createElement('td');
+      noteCell.textContent = milestone.note;
+      row.append(titleCell, noteCell);
+      body.append(row);
+    });
+    table.append(caption, head, body);
+    tableFrame.append(table);
+    inventory.append(summary, auditNote, tableFrame);
+    frame.node()?.append(inventory);
+  };
+
+  const renderConceptLineage = (
+    d3: D3Module,
+    canvas: HTMLElement,
+    spec: ConceptLineageSpec,
+    diagramIndex: number,
+  ) => {
+    if (!Array.isArray(spec.branches) || spec.branches.length < 2) {
+      throw new Error('Concept lineage requires at least two branches.');
+    }
+
+    const idPrefix = `concept-lineage-${diagramIndex}`;
+    const arrowId = `${idPrefix}-arrow`;
+    const width = 1000;
+    const height = 650;
+    const spineY = 325;
+    const target = { x: 820, y: 265, width: 160, height: 120 };
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    canvas.replaceChildren();
+    canvas.classList.add('diagram-canvas--interactive');
+    canvas.setAttribute('role', 'group');
+    canvas.setAttribute('aria-label', spec.title);
+
+    const frame = d3.select(canvas).append('div').attr('class', 'concept-lineage-frame');
+    frame
+      .append('p')
+      .attr('class', 'diagram-scroll-hint')
+      .attr('aria-hidden', 'true')
+      .text('Scroll horizontally to follow every branch →');
+    const scroller = frame.append('div').attr('class', 'diagram-scroll-frame');
+    const svg = scroller
+      .append('svg')
+      .attr('class', 'concept-lineage')
+      .attr('viewBox', `0 0 ${width} ${height}`)
+      .attr('role', 'img')
+      .attr('aria-labelledby', `${idPrefix}-title ${idPrefix}-desc`);
+    svg.append('title').attr('id', `${idPrefix}-title`).text(spec.title);
+    svg.append('desc').attr('id', `${idPrefix}-desc`).text(spec.description);
+    const marker = svg
+      .append('defs')
+      .append('marker')
+      .attr('id', arrowId)
+      .attr('viewBox', '0 0 10 10')
+      .attr('refX', 9)
+      .attr('refY', 5)
+      .attr('markerWidth', 8)
+      .attr('markerHeight', 8)
+      .attr('orient', 'auto-start-reverse');
+    marker.append('path').attr('d', 'M 0 0 L 10 5 L 0 10 z');
+
+    svg.append('text').attr('class', 'chart-title').attr('x', 48).attr('y', 35).text(spec.title);
+    svg.append('text').attr('class', 'chart-kicker').attr('x', 48).attr('y', 58).text('Proposal, not a settled profession');
+
+    const spine = svg
+      .append('path')
+      .attr('class', 'lineage-spine')
+      .attr('d', `M 70 ${spineY} L ${target.x - 8} ${spineY}`)
+      .attr('marker-end', `url(#${arrowId})`);
+
+    const attachmentStart = 250;
+    const attachmentGap = 175;
+    const branchGeometry = spec.branches.map((branch, index) => {
+      const direction = index % 2 === 0 ? -1 : 1;
+      const attachX = attachmentStart + index * attachmentGap;
+      return {
+        ...branch,
+        index,
+        direction,
+        attachX,
+        endX: attachX - 150,
+        endY: spineY + direction * 205,
+      };
+    });
+    const branchGroups = svg
+      .append('g')
+      .attr('class', 'lineage-branches')
+      .selectAll<SVGGElement, (typeof branchGeometry)[number]>('g')
+      .data(branchGeometry)
+      .join('g')
+      .attr('class', 'lineage-branch');
+    const branchPaths = branchGroups
+      .append('path')
+      .attr('class', 'lineage-branch__path')
+      .attr('d', (branch) => `M ${branch.endX} ${branch.endY} L ${branch.attachX} ${spineY}`);
+    branchGroups
+      .append('text')
+      .attr('class', 'lineage-branch__label')
+      .attr('x', (branch) => branch.endX)
+      .attr('y', (branch) => branch.endY + (branch.direction < 0 ? -17 : 29))
+      .attr('text-anchor', 'middle')
+      .text((branch) => branch.label);
+
+    branchGroups.each(function (branch) {
+      const group = d3.select(this);
+      const nodeData = branch.nodes.map((node, index) => {
+        const ratio = (index + 1) / (branch.nodes.length + 1);
+        return {
+          ...node,
+          x: branch.endX + (branch.attachX - branch.endX) * ratio,
+          y: branch.endY + (spineY - branch.endY) * ratio,
+          direction: branch.direction,
+          delayIndex: branch.index * 4 + index,
+        };
+      });
+      const nodes = group
+        .selectAll<SVGAElement, (typeof nodeData)[number]>('.lineage-node')
+        .data(nodeData)
+        .join('a')
+        .attr('class', 'lineage-node')
+        .attr('href', (node) => safeHref(node.url) ?? null)
+        .attr('target', (node) => (safeHref(node.url)?.startsWith('#') ? null : '_blank'))
+        .attr('rel', (node) => (safeHref(node.url)?.startsWith('#') ? null : 'noreferrer'))
+        .attr('aria-label', (node) => `${node.year}: ${node.label}`)
+        .attr('transform', (node) => `translate(${node.x},${node.y})`);
+      nodes.append('circle').attr('r', 8);
+      const labels = nodes
+        .append('text')
+        .attr('class', 'lineage-node__label')
+        .attr('text-anchor', 'middle')
+        .attr('y', (node) => (node.direction < 0 ? -17 : 24));
+      labels.append('tspan').attr('x', 0).text((node) => node.label);
+      labels
+        .append('tspan')
+        .attr('class', 'lineage-node__year')
+        .attr('x', 0)
+        .attr('dy', '1.25em')
+        .text((node) => node.year);
+
+      if (!reduceMotion) {
+        nodes
+          .attr('opacity', 0)
+          .transition()
+          .delay((node) => 500 + node.delayIndex * 85)
+          .duration(300)
+          .attr('opacity', 1);
+      }
+    });
+
+    const targetGroup = svg
+      .append('g')
+      .attr('class', 'lineage-target')
+      .attr('transform', `translate(${target.x},${target.y})`);
+    targetGroup.attr('id', 'graph-engineering');
+    targetGroup.append('rect').attr('width', target.width).attr('height', target.height).attr('rx', 18);
+    const targetTitle = targetGroup.append('text').attr('class', 'lineage-target__title').attr('x', target.width / 2).attr('y', 41).attr('text-anchor', 'middle');
+    const titleParts = spec.target.title.split(' ');
+    targetTitle.append('tspan').attr('x', target.width / 2).text(titleParts[0] ?? 'Graph');
+    targetTitle.append('tspan').attr('x', target.width / 2).attr('dy', '1.05em').text(titleParts.slice(1).join(' ') || 'engineering');
+    targetGroup.append('text').attr('class', 'lineage-target__subtitle').attr('x', target.width / 2).attr('y', target.height + 24).attr('text-anchor', 'middle').text(spec.target.subtitle);
+
+    if (!reduceMotion) {
+      [spine, branchPaths].forEach((selection, selectionIndex) => {
+        selection.each(function (_, index) {
+          const path = this as SVGPathElement;
+          const length = path.getTotalLength();
+          d3.select(path)
+            .attr('stroke-dasharray', `${length} ${length}`)
+            .attr('stroke-dashoffset', length)
+            .transition()
+            .delay(selectionIndex * 280 + index * 90)
+            .duration(700)
+            .attr('stroke-dashoffset', 0);
+        });
+      });
+      targetGroup.attr('opacity', 0).transition().delay(1600).duration(420).attr('opacity', 1);
+    }
+  };
+
   const d3Containers = [...document.querySelectorAll('[data-diagram="d3"]')];
   if (d3Containers.length > 0) {
     try {
       const d3 = await import('d3');
-      d3Containers.forEach((container) => {
+      d3Containers.forEach((container, diagramIndex) => {
         try {
           const canvas = container.querySelector<HTMLElement>('.diagram-canvas');
           if (!canvas) throw new Error('D3 canvas is missing.');
           const spec = parsePayload(container) as D3Spec;
-          if (!Array.isArray(spec.data) || !['bar', 'line', 'scatter'].includes(spec.type)) {
-            throw new Error('Unsupported D3 specification.');
-          }
-
-          const width = Math.max(canvas.clientWidth, 640);
-          const height = 400;
-          const margin = { top: 48, right: 28, bottom: 58, left: 62 };
-          const svg = d3
-            .select(canvas)
-            .append('svg')
-            .attr('viewBox', `0 0 ${width} ${height}`)
-            .attr('role', 'img')
-            .attr('aria-label', spec.title ?? `${spec.type} chart`);
-
-          if (spec.title) {
-            svg.append('text').attr('class', 'chart-title').attr('x', margin.left).attr('y', 24).text(spec.title);
-          }
-
-          const plotWidth = width - margin.left - margin.right;
-          const plotHeight = height - margin.top - margin.bottom;
-          const plot = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
-          const yValue = (datum: D3Datum) => Number(datum.value ?? datum.y ?? 0);
-          const y = d3
-            .scaleLinear()
-            .domain([0, d3.max(spec.data, yValue) ?? 1])
-            .nice()
-            .range([plotHeight, 0]);
-
-          if (spec.type === 'bar') {
-            const x = d3
-              .scaleBand()
-              .domain(spec.data.map((datum, index) => datum.label ?? String(datum.x ?? index)))
-              .range([0, plotWidth])
-              .padding(0.24);
-            plot
-              .append('g')
-              .attr('transform', `translate(0,${plotHeight})`)
-              .call(d3.axisBottom(x));
-            plot
-              .selectAll('rect')
-              .data(spec.data)
-              .join('rect')
-              .attr('x', (datum, index) => x(datum.label ?? String(datum.x ?? index)) ?? 0)
-              .attr('y', (datum) => y(yValue(datum)))
-              .attr('width', x.bandwidth())
-              .attr('height', (datum) => plotHeight - y(yValue(datum)))
-              .attr('rx', 4);
+          if (['bar', 'line', 'scatter'].includes(spec.type)) {
+            renderBasicD3(d3, canvas, spec as BasicD3Spec);
+          } else if (spec.type === 'annual-milestone-heatmap') {
+            renderAnnualHeatmap(d3, canvas, spec, diagramIndex);
+          } else if (spec.type === 'concept-lineage') {
+            renderConceptLineage(d3, canvas, spec, diagramIndex);
           } else {
-            const xValue = (datum: D3Datum, index: number) => Number(datum.x ?? index);
-            const x = d3
-              .scaleLinear()
-              .domain(d3.extent(spec.data, xValue) as [number, number])
-              .nice()
-              .range([0, plotWidth]);
-            plot
-              .append('g')
-              .attr('transform', `translate(0,${plotHeight})`)
-              .call(d3.axisBottom(x));
-            if (spec.type === 'line') {
-              plot
-                .append('path')
-                .datum(spec.data)
-                .attr('class', 'chart-line')
-                .attr(
-                  'd',
-                  d3
-                    .line<D3Datum>()
-                    .x((datum, index) => x(xValue(datum, index)))
-                    .y((datum) => y(yValue(datum))),
-                );
-            }
-            plot
-              .selectAll('circle')
-              .data(spec.data)
-              .join('circle')
-              .attr('cx', (datum, index) => x(xValue(datum, index)))
-              .attr('cy', (datum) => y(yValue(datum)))
-              .attr('r', 5);
-          }
-
-          plot.append('g').call(d3.axisLeft(y));
-          if (spec.xLabel) {
-            svg.append('text').attr('class', 'axis-label').attr('x', margin.left + plotWidth / 2).attr('y', height - 8).text(spec.xLabel);
-          }
-          if (spec.yLabel) {
-            svg
-              .append('text')
-              .attr('class', 'axis-label')
-              .attr('transform', 'rotate(-90)')
-              .attr('x', -(margin.top + plotHeight / 2))
-              .attr('y', 16)
-              .text(spec.yLabel);
+            throw new Error('Unsupported D3 specification.');
           }
         } catch (error) {
           showError(container, error);

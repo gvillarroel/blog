@@ -447,6 +447,371 @@ main {
   text-anchor: middle;
 }
 
+.diagram-canvas--interactive {
+  min-height: 0;
+}
+
+.diagram-scroll-frame {
+  overflow-x: auto;
+  padding-bottom: 0.35rem;
+  scrollbar-color: var(--line) transparent;
+}
+
+.diagram-scroll-frame > svg {
+  display: block;
+  width: 100%;
+  min-width: 58rem;
+  height: auto;
+}
+
+.diagram-scroll-hint {
+  display: none;
+}
+
+[data-diagram='d3'] .chart-kicker {
+  fill: var(--faint);
+  font-size: 0.76rem;
+}
+
+.heatmap-column-label,
+.heatmap-row-label,
+.heatmap-legend text {
+  fill: var(--muted);
+  font-size: 0.76rem;
+}
+
+.heatmap-row-label {
+  font-weight: 650;
+}
+
+.heatmap-cell {
+  cursor: default;
+  outline: none;
+}
+
+.heatmap-cell[role='button'] {
+  cursor: pointer;
+}
+
+.heatmap-cell rect {
+  stroke: rgb(255 255 255 / 7%);
+  stroke-width: 1;
+  transition:
+    stroke 160ms ease,
+    stroke-width 160ms ease,
+    filter 160ms ease;
+}
+
+.heatmap-cell text {
+  fill: var(--text);
+  font-size: 0.85rem;
+  font-weight: 800;
+  pointer-events: none;
+}
+
+.heatmap-cell[role='button']:hover rect,
+.heatmap-cell[role='button']:focus-visible rect {
+  filter: brightness(1.14);
+  stroke: var(--highlight);
+  stroke-width: 3;
+}
+
+.heatmap-cell[data-selected='true'] rect {
+  stroke: var(--highlight);
+  stroke-width: 4;
+}
+
+.heatmap-legend .legend-caption {
+  fill: var(--faint);
+  font-style: italic;
+}
+
+.concept-heatmap__detail,
+.annual-heatmap__detail {
+  margin-top: 1.25rem;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 0.7rem;
+}
+
+.concept-heatmap__detail h3,
+.annual-heatmap__detail h3 {
+  margin: 0.15rem 0 1rem;
+  color: var(--text);
+  font-size: 1.1rem;
+}
+
+.concept-heatmap__selection,
+.annual-heatmap__selection {
+  margin: 0;
+  color: var(--accent);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.concept-heatmap__detail ol,
+.annual-heatmap__detail ol {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.concept-heatmap__detail li,
+.annual-heatmap__detail li {
+  display: grid;
+  grid-template-columns: minmax(9.5rem, 0.42fr) minmax(0, 1fr);
+  gap: 0.2rem 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--line);
+}
+
+.concept-heatmap__detail li:first-child,
+.annual-heatmap__detail li:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.concept-heatmap__detail strong,
+.annual-heatmap__detail strong {
+  color: var(--text);
+  line-height: 1.35;
+}
+
+.concept-heatmap__detail p,
+.annual-heatmap__detail p {
+  grid-column: 2;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.concept-relation {
+  grid-row: span 2;
+  align-self: start;
+  color: var(--faint);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.concept-relation--documented {
+  color: var(--accent);
+}
+
+.concept-relation--synthesis {
+  color: var(--highlight);
+}
+
+.annual-heatmap__panel-bg {
+  fill: #0f1724 !important;
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.annual-heatmap__decade {
+  fill: var(--accent) !important;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.annual-heatmap__year {
+  fill: var(--faint) !important;
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.52rem;
+}
+
+.annual-heatmap__domain {
+  fill: var(--muted) !important;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.heatmap-cell[data-out-of-range='true'] {
+  opacity: 0.34;
+}
+
+.milestone-kind {
+  grid-row: span 2;
+  align-self: start;
+  color: var(--faint);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.milestone-kind--paper,
+.milestone-kind--protocol {
+  color: var(--accent);
+}
+
+.annual-heatmap__inventory {
+  margin-top: 1.25rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 0.7rem;
+}
+
+.annual-heatmap__inventory > summary {
+  padding: 1rem 1.25rem;
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.annual-heatmap__audit-note {
+  max-width: 80ch;
+  margin: 0;
+  padding: 0 1.25rem 1rem;
+  color: var(--muted) !important;
+  font-size: 0.82rem;
+}
+
+.annual-heatmap__table-frame {
+  overflow-x: auto;
+  border-top: 1px solid var(--line);
+}
+
+.annual-heatmap__table-frame table {
+  display: table;
+  width: 100%;
+  min-width: 72rem;
+  border-collapse: collapse;
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.annual-heatmap__table-frame caption {
+  padding: 0.9rem 1rem;
+  color: var(--faint);
+  text-align: left;
+  caption-side: top;
+}
+
+.annual-heatmap__table-frame th,
+.annual-heatmap__table-frame td {
+  padding: 0.58rem 0.66rem;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.annual-heatmap__table-frame th {
+  color: var(--accent);
+  background: var(--surface-raised);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.annual-heatmap__table-frame td {
+  color: var(--muted);
+}
+
+.annual-heatmap__table-frame td:first-child {
+  color: var(--text);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-weight: 800;
+}
+
+.annual-heatmap__table-frame td:nth-child(5) {
+  font-weight: 700;
+}
+
+.concept-lineage .lineage-spine,
+.concept-lineage .lineage-branch__path {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.concept-lineage .lineage-spine {
+  stroke: var(--accent);
+  stroke-width: 5;
+}
+
+.concept-lineage marker path {
+  fill: var(--accent);
+}
+
+.concept-lineage .lineage-branch__path {
+  stroke: var(--faint);
+  stroke-width: 3;
+}
+
+.concept-lineage .lineage-branch__label {
+  fill: var(--text);
+  font-size: 0.86rem;
+  font-weight: 750;
+  letter-spacing: 0.03em;
+}
+
+.concept-lineage .lineage-node circle {
+  fill: var(--surface);
+  stroke: var(--accent-strong);
+  stroke-width: 3;
+  transition:
+    fill 160ms ease,
+    stroke 160ms ease,
+    transform 160ms ease;
+}
+
+.concept-lineage .lineage-node:hover circle,
+.concept-lineage .lineage-node:focus-visible circle {
+  fill: var(--highlight);
+  stroke: var(--highlight);
+  transform: scale(1.25);
+}
+
+.concept-lineage .lineage-node:focus-visible {
+  outline: none;
+}
+
+.concept-lineage .lineage-node__label {
+  fill: var(--text);
+  font-size: 0.68rem;
+  font-weight: 650;
+  paint-order: stroke;
+  stroke: var(--surface);
+  stroke-linejoin: round;
+  stroke-width: 5px;
+}
+
+.concept-lineage .lineage-node__year {
+  fill: var(--muted);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.62rem;
+  font-weight: 500;
+}
+
+.concept-lineage .lineage-target rect {
+  fill: var(--accent);
+  stroke: var(--accent-strong);
+  stroke-width: 2;
+}
+
+.concept-lineage .lineage-target__title {
+  fill: var(--bg);
+  font-size: 1.25rem;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+}
+
+.concept-lineage .lineage-target__subtitle {
+  fill: var(--muted);
+  font-size: 0.68rem;
+  font-style: italic;
+}
+
 @media (max-width: 720px) {
   .site-header {
     min-height: 4.25rem;
@@ -473,10 +838,292 @@ main {
   .diagram-canvas {
     min-height: 19rem;
   }
+
+  .diagram-canvas--interactive {
+    min-height: 0;
+  }
+
+  .diagram-scroll-hint {
+    display: block;
+    margin: 0 0 0.65rem;
+    color: var(--faint);
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
+  }
+
+  .concept-heatmap__detail li,
+  .annual-heatmap__detail li {
+    grid-template-columns: 1fr;
+  }
+
+  .concept-heatmap__detail p,
+  .annual-heatmap__detail p,
+  .concept-relation,
+  .milestone-kind {
+    grid-column: 1;
+    grid-row: auto;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .heatmap-cell rect,
+  .concept-lineage .lineage-node circle {
+    transition: none;
+  }
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 12mm 14mm 15mm;
+  }
+
+  :root {
+    color-scheme: light;
+    --bg: #ffffff;
+    --surface: #f7f9fc;
+    --surface-raised: #edf2f7;
+    --text: #111827;
+    --muted: #334155;
+    --faint: #526178;
+    --line: #cbd5e1;
+    --accent: #087f5b;
+    --accent-strong: #066647;
+    --highlight: #9a6700;
+  }
+
+  html,
+  body {
+    background: #ffffff;
+  }
+
+  body {
+    color: var(--text);
+    font-size: 9.5pt;
+    line-height: 1.45;
+  }
+
+  .site-header,
+  .site-footer,
+  .skip-link,
+  .diagram-source,
+  .diagram-scroll-hint {
+    display: none !important;
+  }
+
+  main,
+  .post-shell {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .post-header {
+    padding: 0 0 8mm;
+  }
+
+  .post-header h1 {
+    max-width: 22ch;
+    font-size: 28pt;
+    line-height: 1.02;
+  }
+
+  .post-summary {
+    max-width: 90ch;
+    margin: 4mm 0;
+    font-size: 12pt;
+  }
+
+  .prose {
+    padding-top: 5mm;
+  }
+
+  .prose p,
+  .prose li {
+    color: #1f2937;
+  }
+
+  .prose h2 {
+    margin: 9mm 0 3mm;
+    font-size: 18pt;
+  }
+
+  .prose h3 {
+    margin: 6mm 0 2mm;
+    font-size: 13pt;
+  }
+
+  .prose h2,
+  .prose h3 {
+    break-after: avoid;
+  }
+
+  .prose a {
+    color: #066647;
+    text-decoration: underline;
+  }
+
+  .prose blockquote {
+    break-inside: avoid;
+  }
+
+  .diagram {
+    --bg: #0c111b;
+    --surface: #111927;
+    --surface-raised: #172033;
+    --text: #f3f6fb;
+    --muted: #a7b2c5;
+    --faint: #718099;
+    --line: #27334a;
+    --accent: #62d2a2;
+    --accent-strong: #8ce8c2;
+    --highlight: #ffd166;
+    width: 100%;
+    margin: 7mm 0;
+    padding: 4mm;
+    background: var(--surface);
+    border-color: var(--line);
+    border-radius: 2mm;
+    transform: none;
+    break-inside: avoid;
+  }
+
+  .diagram:has(.annual-heatmap) {
+    break-inside: auto;
+  }
+
+  .diagram-canvas,
+  .diagram-canvas--interactive {
+    min-height: 0;
+  }
+
+  .diagram-scroll-frame {
+    overflow: visible;
+  }
+
+  .diagram-scroll-frame > svg,
+  .diagram img,
+  .diagram > svg {
+    width: 100%;
+    min-width: 0;
+    max-height: none;
+  }
+
+  [data-diagram='mermaid'] .nodeLabel p,
+  [data-diagram='mermaid'] .edgeLabel p {
+    color: #f3f6fb !important;
+  }
+
+  .annual-heatmap__detail {
+    display: none;
+  }
+
+  .annual-heatmap__inventory {
+    --bg: #ffffff;
+    --surface: #ffffff;
+    --surface-raised: #edf2f7;
+    --text: #111827;
+    --muted: #334155;
+    --faint: #526178;
+    --line: #cbd5e1;
+    --accent: #087f5b;
+    --accent-strong: #066647;
+    margin-top: 5mm;
+    color: var(--text);
+    background: var(--bg);
+    border-color: var(--line);
+    break-inside: auto;
+  }
+
+  .annual-heatmap__inventory > summary {
+    padding: 4mm;
+    font-size: 10pt;
+  }
+
+  .annual-heatmap__audit-note {
+    padding: 0 4mm 3mm;
+    font-size: 7.5pt;
+  }
+
+  .annual-heatmap__table-frame {
+    overflow: visible;
+  }
+
+  .annual-heatmap__table-frame table {
+    display: table;
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+    font-size: 6.6pt;
+    line-height: 1.25;
+  }
+
+  .annual-heatmap__table-frame caption {
+    padding: 2.5mm 3mm;
+    font-size: 7pt;
+  }
+
+  .annual-heatmap__table-frame thead {
+    display: table-header-group;
+  }
+
+  .annual-heatmap__table-frame tr {
+    break-inside: avoid;
+  }
+
+  .annual-heatmap__table-frame th,
+  .annual-heatmap__table-frame td {
+    padding: 1.6mm 1.4mm;
+  }
+
+  .annual-heatmap__table-frame th:nth-child(1),
+  .annual-heatmap__table-frame td:nth-child(1) {
+    width: 7%;
+  }
+
+  .annual-heatmap__table-frame th:nth-child(2),
+  .annual-heatmap__table-frame td:nth-child(2) {
+    width: 11%;
+  }
+
+  .annual-heatmap__table-frame th:nth-child(3),
+  .annual-heatmap__table-frame td:nth-child(3) {
+    width: 12%;
+  }
+
+  .annual-heatmap__table-frame th:nth-child(4),
+  .annual-heatmap__table-frame td:nth-child(4) {
+    width: 10%;
+  }
+
+  .annual-heatmap__table-frame th:nth-child(5),
+  .annual-heatmap__table-frame td:nth-child(5) {
+    width: 21%;
+  }
+
+  .annual-heatmap__table-frame th:nth-child(6),
+  .annual-heatmap__table-frame td:nth-child(6) {
+    width: 39%;
+  }
+
+  .prose > table {
+    display: table;
+    overflow: visible;
+    font-size: 7.5pt;
+  }
+
+  .prose > table tr {
+    break-inside: avoid;
+  }
+
+  .references {
+    break-before: page;
   }
 }
