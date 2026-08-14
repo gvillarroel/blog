@@ -172,6 +172,9 @@ dist/
 Thumbs.db
 /.playwright-cli/
 /output/playwright/
+/output/pdf/
+/.codex-remote-attachments/
+/tmp/
 
 # Private expert corpora and local know registry
 /knowledge/expert-sources/
