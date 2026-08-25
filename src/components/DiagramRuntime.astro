@@ -37,6 +37,22 @@
           ...node.querySelectorAll<HTMLElement>('.mermaid'),
         ]),
       });
+      mermaidContainers.forEach((container) => {
+        const canvas = container.querySelector<HTMLElement>('.mermaid');
+        const svg = canvas?.querySelector<SVGSVGElement>('svg');
+        const viewBox = svg?.viewBox.baseVal;
+        if (!canvas || !viewBox || viewBox.height === 0 || viewBox.width / viewBox.height < 2.4) {
+          return;
+        }
+
+        container.classList.add('diagram--wide');
+        if (!container.querySelector('.diagram-scroll-hint')) {
+          const hint = document.createElement('p');
+          hint.className = 'diagram-scroll-hint';
+          hint.textContent = 'Scroll horizontally to inspect the full diagram';
+          canvas.before(hint);
+        }
+      });
     } catch (error) {
       mermaidContainers.forEach((container) => showError(container, error));
     }

@@ -853,6 +853,13 @@ main {
     text-transform: uppercase;
   }
 
+  [data-diagram='mermaid'].diagram--wide .mermaid > svg {
+    width: 72rem;
+    min-width: 72rem;
+    max-width: none !important;
+    height: auto;
+  }
+
   .concept-heatmap__detail li,
   .annual-heatmap__detail li {
     grid-template-columns: 1fr;
