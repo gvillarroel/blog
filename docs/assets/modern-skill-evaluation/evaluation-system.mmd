@@ -1,0 +1,43 @@
+%%{init: {"theme": "base", "themeVariables": {"fontFamily": "Arial, sans-serif", "primaryColor": "#ffffff", "primaryTextColor": "#111827", "primaryBorderColor": "#334155", "lineColor": "#334155", "secondaryColor": "#f8fafc", "tertiaryColor": "#e8f4fc", "background": "#ffffff", "clusterBkg": "#f8fafc", "clusterBorder": "#64748b", "edgeLabelBackground": "#ffffff"}, "themeCSS": ".nodeLabel, .edgeLabel, .cluster-label { font-family: Arial, sans-serif !important; }", "flowchart": {"curve": "basis", "nodeSpacing": 28, "rankSpacing": 38}}}%%
+flowchart TB
+  T["Declared treatment<br/>One skill bundle and digest"]
+
+  subgraph F["Frozen comparison boundary"]
+    M["Model and decoding"]
+    H["Agent harness and tools"]
+    W["Task world and resources"]
+    R["Verifier and rubric"]
+  end
+
+  subgraph X["Execution and evidence"]
+    J["Isolated task trial"]
+    E["Trajectory + artifacts + logs"]
+    S["Deterministic checks + calibrated semantic review"]
+  end
+
+  subgraph D["Decision layer"]
+    U["Paired results + uncertainty"]
+    G{"All hard gates pass?<br/>No critical cell regresses?"}
+    P["Independent promotion"]
+    A["Archive evidence and retain baseline"]
+  end
+
+  T --> J
+  M --> J
+  H --> J
+  W --> J
+  R --> S
+  J --> E --> S --> U --> G
+  G -- yes --> P
+  G -- no --> A
+
+  classDef treatment fill:#dcfce7,stroke:#166534,color:#052e16,stroke-width:3px,font-weight:bold;
+  classDef frozen fill:#f8fafc,stroke:#475569,color:#111827,stroke-width:1.5px;
+  classDef evidence fill:#e8f4fc,stroke:#005ea8,color:#0f2a3d,stroke-width:2px;
+  classDef gate fill:#fff7ed,stroke:#9a3412,color:#431407,stroke-width:2.5px;
+  classDef reject fill:#fee2e2,stroke:#b91c1c,color:#450a0a,stroke-width:2px;
+  class T,P treatment;
+  class M,H,W,R frozen;
+  class J,E,S,U evidence;
+  class G gate;
+  class A reject;

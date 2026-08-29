@@ -860,6 +860,53 @@ main {
     height: auto;
   }
 
+  .prose p:has(> img[alt^='Definition rails']),
+  .prose p:has(> img[alt^='WikiSkill separates']),
+  .prose p:has(> img[alt^='Architecture of a controlled skill evaluation']),
+  .prose p:has(> img[alt^='Capability landscape for modern skill-evaluation']),
+  .prose p:has(> img[alt^='Decision guide for selecting an evaluation framework']) {
+    overflow-x: auto;
+    padding: 0.45rem 0 0.7rem;
+    overscroll-behavior-inline: contain;
+    scrollbar-color: var(--accent) var(--surface-raised);
+  }
+
+  .prose p:has(> img[alt^='Definition rails'])::before,
+  .prose p:has(> img[alt^='WikiSkill separates'])::before,
+  .prose p:has(> img[alt^='Architecture of a controlled skill evaluation'])::before,
+  .prose p:has(> img[alt^='Capability landscape for modern skill-evaluation'])::before,
+  .prose p:has(> img[alt^='Decision guide for selecting an evaluation framework'])::before {
+    content: 'Scroll horizontally to inspect the full figure';
+    display: block;
+    margin-bottom: 0.55rem;
+    color: var(--faint);
+    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
+  }
+
+  .prose img[alt^='Definition rails'] {
+    width: 70rem;
+    max-width: none;
+  }
+
+  .prose img[alt^='WikiSkill separates'] {
+    width: 46rem;
+    max-width: none;
+  }
+
+  .prose img[alt^='Architecture of a controlled skill evaluation'],
+  .prose img[alt^='Decision guide for selecting an evaluation framework'] {
+    width: 64rem;
+    max-width: none;
+  }
+
+  .prose img[alt^='Capability landscape for modern skill-evaluation'] {
+    width: 80rem;
+    max-width: none;
+  }
+
   .concept-heatmap__detail li,
   .annual-heatmap__detail li {
     grid-template-columns: 1fr;

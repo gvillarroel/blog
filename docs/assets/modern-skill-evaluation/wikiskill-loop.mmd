@@ -1,0 +1,34 @@
+%%{init: {"theme": "base", "themeVariables": {"fontFamily": "Arial, sans-serif", "primaryColor": "#ffffff", "primaryTextColor": "#111827", "primaryBorderColor": "#334155", "lineColor": "#334155", "secondaryColor": "#f8fafc", "tertiaryColor": "#e8f4fc", "background": "#ffffff", "clusterBkg": "#f8fafc", "clusterBorder": "#64748b", "edgeLabelBackground": "#ffffff"}, "themeCSS": ".nodeLabel, .edgeLabel, .cluster-label { font-family: Arial, sans-serif !important; }", "flowchart": {"curve": "basis", "nodeSpacing": 30, "rankSpacing": 34, "wrappingWidth": 250}}}%%
+flowchart TB
+  N["Training boundary: inference sees active skills, not the wiki"]
+  I["1 · RAW LAYER<br/><b>Inference agent runs active skills only</b>"]
+  T["Immutable trajectories<br/>reasoning · tools · outputs · answers"]
+  M["2 · WIKI LAYER<br/><b>Wiki maintainer compiles experience</b>"]
+  P["Patterns + evolution log<br/>accepted and rejected proposals"]
+  Q["3 · SKILLS LAYER<br/><b>Wiki-informed skill proposer</b>"]
+  C["Candidate skill<br/>SKILL.md + PURPOSE.md"]
+  G{"Validation improves?"}
+  A["Activate skill update"]
+  B["Rollback skill update"]
+  O["Persist outcome in the wiki<br/>even when the skill rolls back"]
+
+  I --> T --> M --> P --> Q --> C --> G
+  T --> Q
+  G -- accept --> A
+  G -- reject --> B
+  G --> O
+  O -. informs the next iteration .-> M
+  N -.-> I
+
+  classDef evidence fill:#f8fafc,stroke:#475569,color:#111827,stroke-width:1.5px;
+  classDef knowledge fill:#e8f4fc,stroke:#005ea8,color:#0f2a3d,stroke-width:2px;
+  classDef gate fill:#fff7ed,stroke:#9a3412,color:#431407,stroke-width:2.5px;
+  classDef accepted fill:#dcfce7,stroke:#166534,color:#052e16,stroke-width:3px,font-weight:bold;
+  classDef rejected fill:#fee2e2,stroke:#b91c1c,color:#450a0a,stroke-width:2px;
+  classDef note fill:#fff7ed,stroke:#9a3412,color:#431407,stroke-width:2px,font-weight:bold;
+  class I,T evidence;
+  class M,P,Q,C,O knowledge;
+  class G gate;
+  class A accepted;
+  class B rejected;
+  class N note;

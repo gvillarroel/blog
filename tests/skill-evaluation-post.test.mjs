@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const postPath = new URL(
@@ -27,10 +27,39 @@ const mermaidDiagrams = [...post.matchAll(/```mermaid\r?\n([\s\S]*?)```/g)].map(
 
 test('skill-evaluation post preserves the historical and promotion diagrams', () => {
   assert.equal(mermaidDiagrams.length, 2);
-  assert.match(mermaidDiagrams[0], /Experiment tracking/);
-  assert.match(mermaidDiagrams[0], /Trace-guided evolution/);
-  assert.match(mermaidDiagrams[1], /Sealed holdout/);
-  assert.match(mermaidDiagrams[1], /Independent promotion/);
+  assert.match(mermaidDiagrams[0], /static benchmarks/);
+  assert.match(mermaidDiagrams[0], /Evaluation-guided evolution/);
+  assert.match(mermaidDiagrams[0], /Persistent learning/);
+  assert.match(mermaidDiagrams[1], /Holdout passes/);
+  assert.match(mermaidDiagrams[1], /Promote independently/);
+
+  for (const diagram of mermaidDiagrams) {
+    assert.match(diagram, /"background": "#ffffff"/);
+    assert.match(diagram, /"primaryTextColor": "#111827"/);
+    assert.doesNotMatch(diagram, /#0c111b|#172033|#111927|#f3f6fb/i);
+  }
+});
+
+test('published post includes the light, high-contrast D3 and editorial visual package', () => {
+  const assetRoot = new URL('../src/assets/images/modern-skill-evaluation/', import.meta.url);
+  for (const name of [
+    'skill-evaluation-hero.png',
+    'definition-rails.svg',
+    'wikiskill-loop.static.svg',
+    'evaluation-system.static.svg',
+    'capability-landscape.svg',
+    'selection-guide.static.svg',
+  ]) {
+    assert.ok(existsSync(new URL(name, assetRoot)), `Missing published visual: ${name}`);
+    assert.ok(post.includes(name), `Published post does not reference: ${name}`);
+  }
+
+  const rails = readFileSync(new URL('definition-rails.svg', assetRoot), 'utf8');
+  const capability = readFileSync(new URL('capability-landscape.svg', assetRoot), 'utf8');
+  assert.match(rails, /Four artifacts, four causal questions/);
+  assert.match(rails, /fill="#ffffff"/);
+  assert.match(capability, /Capability landscape/);
+  assert.match(capability, /fill="#ffffff"/);
 });
 
 test('wide Mermaid diagrams retain a readable mobile scale with an explicit scroll hint', () => {
@@ -41,6 +70,12 @@ test('wide Mermaid diagrams retain a readable mobile scale with an explicit scro
     globalCss,
     /\[data-diagram='mermaid'\]\.diagram--wide \.mermaid > svg[\s\S]*?width: 72rem/,
   );
+  assert.match(globalCss, /img\[alt\^='Definition rails'\][\s\S]*?width: 70rem/);
+  assert.match(
+    globalCss,
+    /img\[alt\^='Capability landscape for modern skill-evaluation'\][\s\S]*?width: 80rem/,
+  );
+  assert.match(globalCss, /Scroll horizontally to inspect the full figure/);
 });
 
 test('capability matrix covers execution, testing, RAG, typed, and observability tools', () => {
@@ -76,6 +111,23 @@ test('study contract freezes identity, splits, failure policy, and promotion aut
   ]) {
     assert.ok(post.includes(required), `Missing study control: ${required}`);
   }
+});
+
+test('WikiSkill is integrated without overstating open-source readiness', () => {
+  for (const required of [
+    'Raw Layer',
+    'Wiki Layer',
+    'Skills Layer',
+    '48.7% to',
+    '63.7%',
+    'does not evaluate skill',
+    'retrieval or triggering',
+    'no automated pruning mechanism',
+    'does not link a public',
+  ]) {
+    assert.ok(post.includes(required), `Missing WikiSkill qualification: ${required}`);
+  }
+  assert.match(post, /optimizer proposes or selects treatments; it does not prove that they generalize/i);
 });
 
 test('local case-study claims remain bounded and retain failed promotions', () => {

@@ -1,0 +1,24 @@
+%%{init: {"theme": "base", "themeVariables": {"fontFamily": "Arial, sans-serif", "primaryColor": "#ffffff", "primaryTextColor": "#111827", "primaryBorderColor": "#334155", "lineColor": "#334155", "secondaryColor": "#f8fafc", "tertiaryColor": "#e8f4fc", "background": "#ffffff", "clusterBkg": "#f8fafc", "clusterBorder": "#64748b", "edgeLabelBackground": "#ffffff"}, "themeCSS": ".nodeLabel, .edgeLabel, .cluster-label { font-family: Arial, sans-serif !important; }", "flowchart": {"curve": "basis", "nodeSpacing": 32, "rankSpacing": 38, "wrappingWidth": 230}}}%%
+flowchart TB
+  B["Freeze baseline + discovery evidence"]
+  M["Mutate on development within a fixed budget"]
+  Q{"Validation passes?"}
+  H{"Holdout passes?"}
+  P["Promote independently + freeze new baseline"]
+  A["Archive candidate + retain all evidence"]
+
+  B --> M --> Q
+  Q -- fail --> A
+  Q -- correctness + safety + semantics --> H
+  H -- regression --> A
+  H -- paired gain + no critical regression --> P
+  P -. next generation .-> M
+
+  classDef evidence fill:#f8fafc,stroke:#475569,color:#111827,stroke-width:1.5px;
+  classDef gate fill:#fff7ed,stroke:#9a3412,color:#431407,stroke-width:2.5px;
+  classDef accepted fill:#dcfce7,stroke:#166534,color:#052e16,stroke-width:3px,font-weight:bold;
+  classDef rejected fill:#fee2e2,stroke:#b91c1c,color:#450a0a,stroke-width:2px;
+  class B,M evidence;
+  class Q,H gate;
+  class P accepted;
+  class A rejected;

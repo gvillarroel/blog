@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Skill evaluation framework capability landscape</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: #ffffff;
+      }
+
+      body {
+        display: grid;
+        place-items: center;
+        font-family: "Open Sans", Arial, sans-serif;
+      }
+
+      svg {
+        width: min(100vw, 1600px);
+        height: auto;
+        display: block;
+        background: #ffffff;
+      }
+
+      .matrix-cell {
+        opacity: 1;
+        animation: tile-in 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      }
+
+      @keyframes tile-in {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .matrix-cell {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <svg id="capability-landscape"></svg>
+    <script src="../../../node_modules/d3/dist/d3.min.js"></script>
+    <script>
+      const dimensions = [
+        ["Skill", "identity"],
+        ["Stateful", "world"],
+        ["Trace", "evidence"],
+        ["Executable", "checks"],
+        ["Semantic", "review"],
+        ["Lifecycle", "observability"],
+        ["Built-in", "search"],
+      ];
+
+      const rows = [
+        {
+          group: "Task runners",
+          name: "Harbor",
+          fit: "Complete skill directories",
+          values: ["native", "native", "native", "native", "strong", "adapter", "native"],
+        },
+        {
+          group: "Task runners",
+          name: "Inspect AI",
+          fit: "Custom agent research",
+          values: ["adapter", "native", "native", "native", "native", "adapter", "adapter"],
+        },
+        {
+          group: "Evaluation libraries",
+          name: "Promptfoo",
+          fit: "Provider matrices and CI",
+          values: ["adapter", "adapter", "strong", "native", "native", "adapter", "strong"],
+        },
+        {
+          group: "Evaluation libraries",
+          name: "OpenAI Evals",
+          fit: "Response datasets and graders",
+          values: ["adapter", "none", "adapter", "strong", "native", "none", "none"],
+        },
+        {
+          group: "Evaluation libraries",
+          name: "DeepEval",
+          fit: "Python tests and agent paths",
+          values: ["adapter", "none", "native", "strong", "native", "strong", "strong"],
+        },
+        {
+          group: "Evaluation libraries",
+          name: "Ragas",
+          fit: "Retrieval and RAG quality",
+          values: ["adapter", "none", "strong", "strong", "native", "strong", "adapter"],
+        },
+        {
+          group: "Evaluation libraries",
+          name: "Pydantic Evals",
+          fit: "Typed Python applications",
+          values: ["adapter", "none", "strong", "native", "strong", "strong", "none"],
+        },
+        {
+          group: "Lifecycle platforms",
+          name: "MLflow",
+          fit: "Experiment lifecycle",
+          values: ["adapter", "none", "native", "native", "native", "native", "adapter"],
+        },
+        {
+          group: "Lifecycle platforms",
+          name: "Langfuse",
+          fit: "Open-core LLM observability",
+          values: ["adapter", "none", "native", "strong", "native", "native", "adapter"],
+        },
+        {
+          group: "Lifecycle platforms",
+          name: "Phoenix",
+          fit: "Tracing and evaluation",
+          values: ["adapter", "none", "native", "strong", "native", "native", "adapter"],
+        },
+        {
+          group: "Lifecycle platforms",
+          name: "LangSmith",
+          fit: "Managed LangChain lifecycle",
+          values: ["adapter", "adapter", "native", "strong", "native", "native", "adapter"],
+        },
+      ];
+
+      const state = {
+        native: { label: "N", fill: "#0b6e4f", text: "#ffffff" },
+        strong: { label: "S", fill: "#005ea8", text: "#ffffff" },
+        adapter: { label: "A", fill: "#7a3e00", text: "#ffffff" },
+        none: { label: "-", fill: "#374151", text: "#ffffff" },
+      };
+
+      const width = 1600;
+      const height = 1080;
+      const left = 350;
+      const gridTop = 242;
+      const columnWidth = 132;
+      const rowHeight = 57;
+      const cellSize = 42;
+      const rightLabelX = left + dimensions.length * columnWidth + 32;
+      const rowY = (index) =>
+        gridTop + index * rowHeight + (index >= 2 ? 32 : 0) + (index >= 7 ? 32 : 0);
+
+      const svg = d3
+        .select("#capability-landscape")
+        .attr("viewBox", `0 0 ${width} ${height}`)
+        .attr("role", "img")
+        .attr("aria-labelledby", "cap-title cap-desc");
+
+      svg.append("style").text(`
+        text { font-family: Arial, sans-serif; }
+        .matrix-cell {
+          opacity: 1;
+          animation: tile-in 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+        }
+        @keyframes tile-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .matrix-cell { animation: none; }
+        }
+      `);
+
+      svg
+        .append("title")
+        .attr("id", "cap-title")
+        .text("Capability landscape for modern skill evaluation frameworks");
+
+      svg
+        .append("desc")
+        .attr("id", "cap-desc")
+        .text(
+          "An ordinal matrix comparing eleven frameworks across skill identity, stateful execution, trace evidence, executable checks, semantic review, lifecycle observability, and built-in search. The matrix encodes native, strong, adapter, or outside-scope support and does not rank overall product quality.",
+        );
+
+      svg.append("rect").attr("width", width).attr("height", height).attr("fill", "#ffffff");
+
+      svg
+        .append("text")
+        .attr("x", 54)
+        .attr("y", 64)
+        .attr("fill", "#111827")
+        .attr("font-size", 34)
+        .attr("font-weight", 750)
+        .text("Capability landscape: where each framework is strongest");
+
+      svg
+        .append("text")
+        .attr("x", 54)
+        .attr("y", 103)
+        .attr("fill", "#475569")
+        .attr("font-size", 18)
+        .text("Documented support as of 2026-08-29. This is a capability map, not a benchmark score.");
+
+      const header = svg.append("g").attr("aria-label", "Capability columns");
+      dimensions.forEach((parts, index) => {
+        const x = left + index * columnWidth + cellSize / 2;
+        const text = header
+          .append("text")
+          .attr("x", x)
+          .attr("y", 162)
+          .attr("fill", "#1f2937")
+          .attr("font-size", 15)
+          .attr("font-weight", 700)
+          .attr("text-anchor", "middle");
+        parts.forEach((part, partIndex) => {
+          text
+            .append("tspan")
+            .attr("x", x)
+            .attr("dy", partIndex === 0 ? 0 : 20)
+            .text(part);
+        });
+      });
+
+      header
+        .append("text")
+        .attr("x", rightLabelX)
+        .attr("y", 172)
+        .attr("fill", "#1f2937")
+        .attr("font-size", 15)
+        .attr("font-weight", 700)
+        .text("Default fit");
+
+      const groupStarts = new Map();
+      rows.forEach((row, index) => {
+        if (!groupStarts.has(row.group)) groupStarts.set(row.group, index);
+      });
+
+      for (const [group, startIndex] of groupStarts) {
+        const y = rowY(startIndex) - 18;
+        svg
+          .append("text")
+          .attr("x", 54)
+          .attr("y", y)
+          .attr("fill", "#166534")
+          .attr("font-size", 13)
+          .attr("font-weight", 750)
+          .attr("letter-spacing", 1.4)
+          .text(group.toUpperCase());
+        svg
+          .append("line")
+          .attr("x1", 54)
+          .attr("x2", width - 54)
+          .attr("y1", y + 10)
+          .attr("y2", y + 10)
+          .attr("stroke", "#94a3b8")
+          .attr("stroke-width", 1);
+      }
+
+      const row = svg
+        .selectAll("g.framework-row")
+        .data(rows)
+        .join("g")
+        .attr("class", "framework-row")
+        .attr("transform", (_, index) => `translate(0, ${rowY(index)})`);
+
+      row
+        .append("rect")
+        .attr("x", 54)
+        .attr("y", 0)
+        .attr("width", width - 108)
+        .attr("height", 48)
+        .attr("rx", 8)
+        .attr("fill", (_, index) => (index % 2 === 0 ? "#f8fafc" : "#ffffff"))
+        .attr("stroke", "#e2e8f0");
+
+      row
+        .append("text")
+        .attr("x", 72)
+        .attr("y", 30)
+        .attr("fill", "#111827")
+        .attr("font-size", 18)
+        .attr("font-weight", 650)
+        .text((d) => d.name);
+
+      row
+        .append("text")
+        .attr("x", rightLabelX)
+        .attr("y", 29)
+        .attr("fill", "#334155")
+        .attr("font-size", 15)
+        .text((d) => d.fit);
+
+      row.each(function (framework, rowIndex) {
+        const cells = d3
+          .select(this)
+          .selectAll("g.matrix-cell")
+          .data(framework.values.map((value, columnIndex) => ({ value, columnIndex })))
+          .join("g")
+          .attr("class", "matrix-cell")
+          .attr("id", (d) => `cell-${framework.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${d.columnIndex}`)
+          .attr("transform", (d) => `translate(${left + d.columnIndex * columnWidth}, 4)`)
+          .style("animation-delay", (d) => `${120 + rowIndex * 45 + d.columnIndex * 22}ms`);
+
+        cells
+          .append("rect")
+          .attr("width", cellSize)
+          .attr("height", cellSize)
+          .attr("rx", 9)
+          .attr("fill", (d) => state[d.value].fill)
+          .attr("stroke", "#ffffff")
+          .attr("stroke-width", 2);
+
+        cells
+          .append("text")
+          .attr("x", cellSize / 2)
+          .attr("y", 28)
+          .attr("text-anchor", "middle")
+          .attr("fill", (d) => state[d.value].text)
+          .attr("font-size", 17)
+          .attr("font-weight", 800)
+          .text((d) => state[d.value].label);
+
+        cells.append("title").text((d) => `${framework.name}: ${dimensions[d.columnIndex].join(" ")} - ${d.value}`);
+      });
+
+      const legendData = [
+        ["native", "N  Native / first-class"],
+        ["strong", "S  Strong documented support"],
+        ["adapter", "A  Adapter or manual convention"],
+        ["none", "-  Outside the framework's center of gravity"],
+      ];
+      const legend = svg.append("g").attr("transform", "translate(54, 970)").attr("aria-label", "Legend");
+
+      legend
+        .selectAll("g.legend-item")
+        .data(legendData)
+        .join("g")
+        .attr("class", "legend-item")
+        .attr("transform", (_, index) => `translate(${index * 360}, 0)`)
+        .each(function ([key, label]) {
+          const item = d3.select(this);
+          item
+            .append("rect")
+            .attr("width", 34)
+            .attr("height", 34)
+            .attr("rx", 7)
+            .attr("fill", state[key].fill);
+          item
+            .append("text")
+            .attr("x", 17)
+            .attr("y", 23)
+            .attr("text-anchor", "middle")
+            .attr("font-size", 14)
+            .attr("font-weight", 800)
+            .attr("fill", state[key].text)
+            .text(state[key].label);
+          item
+            .append("text")
+            .attr("x", 46)
+            .attr("y", 23)
+            .attr("font-size", 14)
+            .attr("fill", "#1f2937")
+            .text(label.slice(3));
+        });
+
+      svg
+        .append("text")
+        .attr("x", 54)
+        .attr("y", 1045)
+        .attr("fill", "#475569")
+        .attr("font-size", 13)
+        .text(
+          "Read by column, not by row total: complete skill evolution requires execution, evidence, and promotion controls that often span multiple products.",
+        );
+
+      window.__vizReady = true;
+    </script>
+  </body>
+</html>

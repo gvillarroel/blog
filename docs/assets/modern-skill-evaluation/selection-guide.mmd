@@ -1,0 +1,27 @@
+%%{init: {"theme": "base", "themeVariables": {"fontFamily": "Arial, sans-serif", "primaryColor": "#ffffff", "primaryTextColor": "#111827", "primaryBorderColor": "#334155", "lineColor": "#334155", "secondaryColor": "#f8fafc", "tertiaryColor": "#e8f4fc", "background": "#ffffff", "clusterBkg": "#f8fafc", "clusterBorder": "#64748b", "edgeLabelBackground": "#ffffff"}, "themeCSS": ".nodeLabel, .edgeLabel, .cluster-label { font-family: Arial, sans-serif !important; }", "flowchart": {"curve": "basis", "nodeSpacing": 24, "rankSpacing": 34}}}%%
+flowchart TB
+  S{"What must the agent<br/>produce or change?"}
+  O["One response or prompt matrix"]
+  T["A multi-step trajectory"]
+  W["A repository, terminal, browser,<br/>or other changed world"]
+  K["An evolving skill directory"]
+
+  O --> O1["Promptfoo, OpenAI Evals,<br/>DeepEval, Pydantic Evals"]
+  T --> T1["Inspect AI or DeepEval<br/>plus an observability layer"]
+  W --> W1["Harbor or Inspect AI<br/>with executable verifiers"]
+  K --> K1["Harbor first<br/>or Inspect with an explicit skill adapter"]
+  K1 --> K2["Add immutable skill identity,<br/>disjoint splits, and independent promotion"]
+
+  S -- response --> O
+  S -- trace --> T
+  S -- changed state --> W
+  S -- reusable procedure --> K
+
+  classDef question fill:#fff7ed,stroke:#9a3412,color:#431407,stroke-width:2.5px;
+  classDef path fill:#f8fafc,stroke:#475569,color:#111827,stroke-width:1.5px;
+  classDef answer fill:#e8f4fc,stroke:#005ea8,color:#0f2a3d,stroke-width:2px;
+  classDef target fill:#dcfce7,stroke:#166534,color:#052e16,stroke-width:3px,font-weight:bold;
+  class S question;
+  class O,T,W,K path;
+  class O1,T1,W1,K1 answer;
+  class K2 target;

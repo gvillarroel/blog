@@ -6,6 +6,7 @@ An Astro technical blog that turns evidence-based research into public Markdown 
 
 - [Usage and setup](getting-started.md)
 - [Repository layout, maintenance, and validation](repository-guide.md)
+- [Modern skill evaluation and evolution](modern-skill-evaluation.md)
 - [Agent instructions](../AGENTS.md)
 - [Research and private-source workflow](../knowledge/README.md)
 - [Architecture decisions](../.specs/adr/)
