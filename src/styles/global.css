@@ -860,7 +860,7 @@ main {
     height: auto;
   }
 
-  .prose p:has(> img[alt^='Definition rails']),
+  .prose p:has(> img[alt^='RoadRails definitions']),
   .prose p:has(> img[alt^='WikiSkill separates']),
   .prose p:has(> img[alt^='Architecture of a controlled skill evaluation']),
   .prose p:has(> img[alt^='Capability landscape for modern skill-evaluation']),
@@ -871,7 +871,7 @@ main {
     scrollbar-color: var(--accent) var(--surface-raised);
   }
 
-  .prose p:has(> img[alt^='Definition rails'])::before,
+  .prose p:has(> img[alt^='RoadRails definitions'])::before,
   .prose p:has(> img[alt^='WikiSkill separates'])::before,
   .prose p:has(> img[alt^='Architecture of a controlled skill evaluation'])::before,
   .prose p:has(> img[alt^='Capability landscape for modern skill-evaluation'])::before,
@@ -886,8 +886,8 @@ main {
     text-transform: uppercase;
   }
 
-  .prose img[alt^='Definition rails'] {
-    width: 70rem;
+  .prose img[alt^='RoadRails definitions'] {
+    width: 66rem;
     max-width: none;
   }
 

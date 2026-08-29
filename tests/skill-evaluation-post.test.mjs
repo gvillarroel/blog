@@ -40,11 +40,11 @@ test('skill-evaluation post preserves the historical and promotion diagrams', ()
   }
 });
 
-test('published post includes the light, high-contrast D3 and editorial visual package', () => {
+test('published post includes the light, high-contrast Railroad, D3, and editorial visual package', () => {
   const assetRoot = new URL('../src/assets/images/modern-skill-evaluation/', import.meta.url);
   for (const name of [
     'skill-evaluation-hero.png',
-    'definition-rails.svg',
+    'definition-railroads.static.svg',
     'wikiskill-loop.static.svg',
     'evaluation-system.static.svg',
     'capability-landscape.svg',
@@ -54,10 +54,12 @@ test('published post includes the light, high-contrast D3 and editorial visual p
     assert.ok(post.includes(name), `Published post does not reference: ${name}`);
   }
 
-  const rails = readFileSync(new URL('definition-rails.svg', assetRoot), 'utf8');
+  const rails = readFileSync(new URL('definition-railroads.static.svg', assetRoot), 'utf8');
   const capability = readFileSync(new URL('capability-landscape.svg', assetRoot), 'utf8');
-  assert.match(rails, /Four artifacts, four causal questions/);
-  assert.match(rails, /fill="#ffffff"/);
+  assert.match(rails, /class="railroad-diagram"/);
+  assert.match(rails, /agent_harness =/);
+  assert.match(rails, /evaluation_harness =/);
+  assert.match(rails, /background-color: white/);
   assert.match(capability, /Capability landscape/);
   assert.match(capability, /fill="#ffffff"/);
 });
@@ -70,7 +72,7 @@ test('wide Mermaid diagrams retain a readable mobile scale with an explicit scro
     globalCss,
     /\[data-diagram='mermaid'\]\.diagram--wide \.mermaid > svg[\s\S]*?width: 72rem/,
   );
-  assert.match(globalCss, /img\[alt\^='Definition rails'\][\s\S]*?width: 70rem/);
+  assert.match(globalCss, /img\[alt\^='RoadRails definitions'\][\s\S]*?width: 66rem/);
   assert.match(
     globalCss,
     /img\[alt\^='Capability landscape for modern skill-evaluation'\][\s\S]*?width: 80rem/,

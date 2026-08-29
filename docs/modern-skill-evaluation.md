@@ -44,12 +44,13 @@ an execution layer, an evidence layer, and a promotion layer.
 
 Four objects are often called a "harness," but they answer different questions.
 
-![Definition rails for model, agent harness, skill, and evaluation harness](assets/modern-skill-evaluation/definition-rails.svg)
+![RoadRails definitions for model, agent harness, skill, and evaluation harness](assets/modern-skill-evaluation/definition-railroads.static.svg)
 
-*Figure 1. The word rails keep the artifact, its definition, and its causal question on
-one line. This prevents the overloaded word "harness" from hiding what changed.*
+*Figure 1. RoadRails, rendered as Mermaid Railroad productions, make the internal
+composition of each artifact explicit. Alternatives show what may vary, while bypass
+paths mark optional skill-bundle components.*
 
-[D3 authoring source](assets/modern-skill-evaluation/definition-rails.html)
+[Animated SVG](assets/modern-skill-evaluation/definition-railroads.animated.svg) | [Mermaid source](assets/modern-skill-evaluation/definition-railroads.mmd)
 
 **Text equivalent:** the model is the weights or fixed API plus decoding and context
 limits; the agent harness is the loop, tools, memory, parser, recovery, and context

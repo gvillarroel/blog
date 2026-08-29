@@ -19,10 +19,9 @@ const mermaidTargets = [...doc.matchAll(/\[Mermaid source\]\(([^)]+)\)/g)].map(
 
 test('final guide includes the complete authored and generated visual package', () => {
   assert.equal(figureTargets.length, 8);
-  assert.equal(animatedTargets.length, 5);
-  assert.equal(mermaidTargets.length, 5);
+  assert.equal(animatedTargets.length, 6);
+  assert.equal(mermaidTargets.length, 6);
   assert.match(doc, /\[D3 authoring source\]\(assets\/modern-skill-evaluation\/capability-landscape\.html\)/);
-  assert.match(doc, /\[D3 authoring source\]\(assets\/modern-skill-evaluation\/definition-rails\.html\)/);
 
   const targets = [
     ...figureTargets,
@@ -30,8 +29,6 @@ test('final guide includes the complete authored and generated visual package', 
     ...mermaidTargets,
     'assets/modern-skill-evaluation/capability-landscape.html',
     'assets/modern-skill-evaluation/capability-landscape.png',
-    'assets/modern-skill-evaluation/definition-rails.html',
-    'assets/modern-skill-evaluation/definition-rails.png',
   ];
 
   for (const target of targets) {
@@ -59,24 +56,27 @@ test('generated SVGs retain dimensions, content, and accessible descriptions', (
   assert.match(d3Svg, /Built-in search/);
   assert.match(d3Svg, /not a benchmark/i);
 
-  const railsSvg = readFileSync(new URL('definition-rails.svg', assetRoot), 'utf8');
-  assert.match(railsSvg, /Four artifacts, four causal questions/);
-  assert.match(railsSvg, /EVALUATION HARNESS/);
-  assert.match(railsSvg, /Was the comparison measured reliably/);
+  const railsSource = readFileSync(new URL('definition-railroads.mmd', assetRoot), 'utf8');
+  const railsSvg = readFileSync(new URL('definition-railroads.static.svg', assetRoot), 'utf8');
+  assert.match(railsSource, /railroad-ebnf-beta/);
+  assert.match(railsSource, /model =/);
+  assert.match(railsSource, /agent_harness =/);
+  assert.match(railsSource, /skill =/);
+  assert.match(railsSource, /evaluation_harness =/);
+  assert.match(railsSvg, /class="railroad-diagram"/);
+  assert.match(railsSvg, /background-color: white/);
+  assert.match(railsSvg, /aria-describedby="chart-desc-my-svg"/);
 });
 
 test('visuals use embedded light backgrounds and high-contrast authored palettes', () => {
   for (const target of [...mermaidTargets]) {
     const source = readFileSync(new URL(target.split('/').at(-1), assetRoot), 'utf8');
-    assert.match(source, /"background": "#ffffff"/);
-    assert.match(source, /"primaryTextColor": "#111827"/);
+    assert.match(source, /(?:"background"|background):\s*"#ffffff"/);
+    assert.match(source, /(?:"primaryTextColor"|primaryTextColor):\s*"#(?:111827|333e48)"/i);
     assert.doesNotMatch(source, /#0c111b|#172033|#111927|#f3f6fb/i);
   }
 
-  for (const name of [
-    'capability-landscape.html',
-    'definition-rails.html',
-  ]) {
+  for (const name of ['capability-landscape.html']) {
     const source = readFileSync(new URL(name, assetRoot), 'utf8');
     assert.match(source, /background: #ffffff/);
   }
@@ -91,6 +91,11 @@ test('visuals use embedded light backgrounds and high-contrast authored palettes
     const source = readFileSync(new URL(name, assetRoot), 'utf8');
     assert.match(source, /data-diagram-background="light"/);
   }
+
+  const railroadSvg = readFileSync(new URL('definition-railroads.static.svg', assetRoot), 'utf8');
+  assert.match(railroadSvg, /background-color: white/);
+  assert.match(railroadSvg, /<title\b[^>]*>Four artifact definitions/);
+  assert.match(railroadSvg, /<desc\b/);
 });
 
 test('comparison covers the intended open and proprietary framework set', () => {

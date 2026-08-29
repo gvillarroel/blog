@@ -148,10 +148,11 @@ outcome to the evidence base.*
 
 The word *harness* is overloaded. A useful evaluation names four different objects:
 
-![Definition rails for model, agent harness, skill, and evaluation harness](../../assets/images/modern-skill-evaluation/definition-rails.svg)
+![RoadRails definitions for model, agent harness, skill, and evaluation harness](../../assets/images/modern-skill-evaluation/definition-railroads.static.svg)
 
-*The D3 word rails keep the artifact, its definition, and its causal question on one
-line, so the overloaded word “harness” cannot hide what changed.*
+*The RoadRails view uses Mermaid Railroad productions to expose the composition of each
+artifact. The model implementation is an explicit alternative, and optional skill
+components appear as bypass paths rather than being hidden in prose.*
 
 In text: the **model** is the weights or fixed API plus decoding and context limits; the
 **agent harness** is the loop, tools, memory, parser, recovery, and context policy; the

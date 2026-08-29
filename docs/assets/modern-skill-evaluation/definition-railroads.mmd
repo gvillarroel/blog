@@ -1,0 +1,41 @@
+---
+# mermaid: config begin
+config:
+  theme: "base"
+  themeVariables:
+    background: "#ffffff"
+    primaryColor: "#ffccd5"
+    primaryTextColor: "#333e48"
+    primaryBorderColor: "#9e1b32"
+    secondaryColor: "#e7e7e7"
+    secondaryTextColor: "#333e48"
+    secondaryBorderColor: "#4f4f4f"
+    tertiaryColor: "#e7e7e7"
+    tertiaryTextColor: "#333e48"
+    tertiaryBorderColor: "#9c9c9c"
+    lineColor: "#696969"
+    textColor: "#333e48"
+    mainBkg: "#ffccd5"
+    nodeBkg: "#ffccd5"
+    nodeBorder: "#9e1b32"
+    clusterBkg: "#e7e7e7"
+    clusterBorder: "#9c9c9c"
+    defaultLinkColor: "#696969"
+    edgeLabelBackground: "#ffffff"
+    labelColor: "#333e48"
+    titleColor: "#333e48"
+# mermaid: config end
+# mermaid: metadata begin
+mermaid:
+  colorset: "colorset1"
+  mode: "standard"
+  palette: "basic-red-neutral-style"
+# mermaid: metadata end
+---
+railroad-ebnf-beta
+accTitle: Four artifact definitions for controlled skill evaluation
+accDescr: Four railroad productions define the model as its implementation, decoding policy, and context limits; the agent harness as its loop, tools, memory, parser, recovery, and context policy; the skill as SKILL.md plus instructions and optional scripts, references, and assets; and the evaluation harness as tasks, runner, environments, graders, logs, and aggregation.
+model = ( "model weights" | "fixed model API" ), "decoding policy", "context limits" ;
+agent_harness = "control loop", "tools", "memory", "parser", "recovery policy", "context policy" ;
+skill = "SKILL.md", "instructions", [ "scripts" ], [ "references" ], [ "assets" ] ;
+evaluation_harness = "tasks", "runner", "environments", "graders", "logs", "aggregation" ;

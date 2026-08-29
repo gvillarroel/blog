@@ -36,13 +36,10 @@ def find_chrome() -> Path:
 def build_html(source: Path) -> str:
     source_text = source.read_text(encoding="utf-8")
 
-    # Chrome prints the authored SVGs correctly, but the D3 PNG snapshots provide
-    # deterministic typography and a compact PDF while retaining the HTML/SVG sources
-    # in the companion bundle.
+    # Chrome prints the Mermaid Railroad SVG directly. The dense D3 capability map uses
+    # its PNG snapshot for deterministic typography and a compact PDF while retaining
+    # the HTML/SVG sources in the companion bundle.
     source_text = source_text.replace(
-        "assets/modern-skill-evaluation/definition-rails.svg",
-        "assets/modern-skill-evaluation/definition-rails.png",
-    ).replace(
         "assets/modern-skill-evaluation/capability-landscape.svg",
         "assets/modern-skill-evaluation/capability-landscape.png",
     )
@@ -145,7 +142,7 @@ def build_html(source: Path) -> str:
       }
 
       img[src$="skill-evaluation-hero.png"] { max-height: 112mm; }
-      img[src$="definition-rails.png"] { max-height: 121mm; }
+      img[src$="definition-railroads.static.svg"] { max-height: 105mm; }
       img[src$="capability-landscape.png"] { max-height: 151mm; }
 
       p:has(> img) {
