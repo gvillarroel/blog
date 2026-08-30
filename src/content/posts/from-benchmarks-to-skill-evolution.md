@@ -157,6 +157,9 @@ references:
   - title: "The Open Source Definition"
     url: "https://opensource.org/osd"
     accessed: 2026-08-24
+  - title: "Revised Modern Skill Evaluation and Evolution PDF edition"
+    url: "https://github.com/gvillarroel/blog/releases/download/skill-evaluation-guide-2026-08-30/modern-skill-evaluation-framework-selection-guide.pdf"
+    accessed: 2026-08-30
 ---
 
 The difficult question is no longer “which model scored highest?” It is:
@@ -177,7 +180,7 @@ references, and assets—often rooted at `SKILL.md`—that is injected into an o
 frozen agent. A system prompt alone can be a treatment, but it is not automatically a
 portable skill.
 
-**PDF edition:** [download the revised 16-page framework-selection guide](../../reports/modern-skill-evaluation-framework-selection-guide.pdf).
+**PDF edition:** [download the revised 16-page framework-selection guide](https://github.com/gvillarroel/blog/releases/download/skill-evaluation-guide-2026-08-30/modern-skill-evaluation-framework-selection-guide.pdf).
 
 ![Conceptual path from immutable traces through persistent knowledge to gated skill promotion](../../assets/images/modern-skill-evaluation/skill-evaluation-hero.png)
 

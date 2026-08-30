@@ -68,14 +68,9 @@ test('published post includes the light, high-contrast Railroad, D3, and editori
 });
 
 test('published post exposes the verified PDF edition', () => {
-  const pdfPath = new URL(
-    '../public/reports/modern-skill-evaluation-framework-selection-guide.pdf',
-    import.meta.url,
-  );
-  assert.ok(existsSync(pdfPath), 'Missing public PDF edition');
   assert.match(
     post,
-    /\(\.\.\/\.\.\/reports\/modern-skill-evaluation-framework-selection-guide\.pdf\)/,
+    /https:\/\/github\.com\/gvillarroel\/blog\/releases\/download\/skill-evaluation-guide-2026-08-30\/modern-skill-evaluation-framework-selection-guide\.pdf/,
   );
 });
 
