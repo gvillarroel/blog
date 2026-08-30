@@ -129,6 +129,18 @@ def build_html(source: Path) -> str:
 
       li { margin-bottom: 1.2mm; }
 
+      h2#references + ul {
+        column-count: 2;
+        column-gap: 8mm;
+        font-size: 8.3pt;
+        line-height: 1.3;
+      }
+
+      h2#references + ul > li {
+        break-inside: avoid-column;
+        page-break-inside: avoid;
+      }
+
       img {
         display: block;
         width: 100%;
@@ -157,6 +169,8 @@ def build_html(source: Path) -> str:
       p:has(> img) + p {
         break-before: avoid-page;
         page-break-before: avoid;
+        break-inside: avoid-page;
+        page-break-inside: avoid;
       }
 
       table {

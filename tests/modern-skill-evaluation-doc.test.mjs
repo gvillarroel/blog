@@ -60,6 +60,8 @@ test('generated SVGs retain dimensions, content, and accessible descriptions', (
   assert.match(d3Svg, /Paired skill lift/);
   assert.match(d3Svg, /Search \+ evolution/);
   assert.match(d3Svg, /NVIDIA SkillEvaluator/);
+  assert.match(d3Svg, /Opik/);
+  assert.match(d3Svg, /seventeen frameworks/);
   assert.match(d3Svg, /not a benchmark/i);
 
   const d3Source = readFileSync(new URL('capability-landscape.html', assetRoot), 'utf8');
@@ -147,6 +149,15 @@ test('comparison covers the intended open and proprietary framework set', () => 
   for (const framework of [
     'Harbor',
     'NVIDIA SkillEvaluator',
+    'agent-skill-eval',
+    'agent-skills-eval',
+    'Skillgrade',
+    'SkillPortrait',
+    'SkillBenchmark',
+    'SkillsBench',
+    'Hugging Face upskill',
+    'SkillCompass',
+    'Microsoft SkillLens',
     'AWS sample skill-eval',
     'SkillTester',
     'Inspect AI',
@@ -158,6 +169,7 @@ test('comparison covers the intended open and proprietary framework set', () => 
     'MLflow',
     'Langfuse',
     'Phoenix',
+    'Opik',
     'LangSmith',
     'Microsoft SkillOpt',
     'SkillOps',
@@ -168,6 +180,15 @@ test('comparison covers the intended open and proprietary framework set', () => 
   assert.match(doc, /Public on GitHub[^\n]+not a license/i);
   assert.match(doc, /source available, not OSI open source/i);
   assert.match(doc, /LangSmith \| Proprietary/);
+  assert.match(doc, /Opik \| Apache-2\.0 \| 21,694 \| 1,741/);
+  assert.match(doc, /representative, not exhaustive/);
+  assert.match(doc, /W&B Weave/);
+  assert.match(doc, /TruLens/);
+  assert.match(doc, /Braintrust/);
+  assert.match(doc, /SWE-Skills-Bench/);
+  assert.match(doc, /workspace is not process or credential isolation/i);
+  assert.match(doc, /unpaired Welch interval despite matched arms/i);
+  assert.match(doc, /root license text says Apache-2\.0 while \[npm metadata\][^\n]+says MIT/i);
   assert.match(doc, /SkillOpt[^\n]+Microsoft/);
   assert.match(doc, /SkillOps[^\n]+Emory\/UIUC/);
 });
@@ -191,6 +212,44 @@ test('modern evaluation pillars and auditable promotion controls remain complete
   assert.doesNotMatch(doc, /Minimal auditable study contract|```yaml/);
 });
 
+test('causal and statistical claims define the estimand, cluster unit, and holdout semantics', () => {
+  for (const required of [
+    'target_skill_lift',
+    'availability-effect convention',
+    'conditional on forced exposure',
+    'trigger-negative',
+    'false activation',
+    'separate mechanism estimand',
+    'sampling cluster',
+    'pseudoreplication',
+    'paired McNemar',
+    'practically meaningful lift threshold',
+    'underpowered study exploratory',
+    'declared multiplicity procedure',
+    'failure to detect a loss is not evidence of non-inferiority',
+    'controlled disclosure mechanism',
+    'one-finalist, one-release policy',
+    'cohort is retired',
+  ]) {
+    assert.ok(doc.includes(required), `Missing statistical control: ${required}`);
+  }
+
+  assert.match(doc, /SkillsBench[\s\S]{0,500}matched no-Skills and curated-Skills/);
+  assert.match(doc, /39 of 49 skills with zero pass-rate\s+improvement/s);
+  assert.match(doc, /307 skill-induced failures/);
+});
+
+test('capability comparison is accessible as exact text and security is a promotion gate', () => {
+  assert.match(doc, /\| Framework \| Skill artifact \| Paired lift \| Stateful world \| Trace evidence \|/);
+  assert.match(doc, /\| Framework \| Executable checks \| Behavior \/ semantics \| Safety \/ static \| Search \/ evolution \|/);
+  assert.match(doc, /\*\*N\*\*\s+means native\/first-class/);
+  assert.match(doc, /must not be totaled into a rank/);
+  assert.match(doc, /least privilege and no\s+production secrets/);
+  assert.match(doc, /restricted egress/);
+  assert.match(doc, /blinded,\s+representative human-reviewed sample/);
+  assert.match(doc, /caches, and\s+persistent agent memory between arms/);
+});
+
 test('WikiSkill is integrated as a persistent-learning method without overstating adoptability', () => {
   for (const required of [
     'Raw Layer',
@@ -209,8 +268,9 @@ test('WikiSkill is integrated as a persistent-learning method without overstatin
 });
 
 test('local case-study evidence stays bounded and private corpora stay private', () => {
+  assert.match(doc, /\*\*Author:\*\* Guillermo Villarroel/);
   assert.match(doc, /24 Harbor jobs and 78 trials/);
-  assert.match(doc, /98\.674426%/);
+  assert.match(doc, /98\.7%/);
   assert.match(doc, /zero-regression rule retained the baseline/);
   assert.match(doc, /evidence for those tasks and budgets,\s+not a\s+universal ranking/i);
 

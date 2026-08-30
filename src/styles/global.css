@@ -319,6 +319,11 @@ main {
   color: #d3dae7;
 }
 
+.prose [data-diagram='mermaid'] .nodeLabel p,
+.prose [data-diagram='mermaid'] .edgeLabel p {
+  color: inherit !important;
+}
+
 .prose blockquote {
   margin: 2rem 0;
   padding: 0.25rem 0 0.25rem 1.25rem;
@@ -1100,7 +1105,7 @@ main {
 
   [data-diagram='mermaid'] .nodeLabel p,
   [data-diagram='mermaid'] .edgeLabel p {
-    color: #f3f6fb !important;
+    color: inherit !important;
   }
 
   .annual-heatmap__detail {

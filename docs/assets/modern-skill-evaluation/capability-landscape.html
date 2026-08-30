@@ -136,6 +136,12 @@
         },
         {
           group: "Lifecycle platforms",
+          name: "Opik",
+          fit: "Open evaluation and optimization",
+          values: ["adapter", "adapter", "none", "native", "strong", "native", "adapter", "native"],
+        },
+        {
+          group: "Lifecycle platforms",
           name: "LangSmith",
           fit: "Managed LangChain lifecycle",
           values: ["adapter", "adapter", "adapter", "native", "strong", "native", "adapter", "adapter"],
@@ -150,7 +156,6 @@
       };
 
       const width = 1600;
-      const height = 1320;
       const left = 360;
       const gridTop = 220;
       const columnWidth = 105;
@@ -164,6 +169,10 @@
           .filter((row, offset) => row.group !== rows[offset].group).length;
         return gridTop + index * rowHeight + groupBreaks * 28;
       };
+      const lastRowBottom = rowY(rows.length - 1) + 48;
+      const legendY = lastRowBottom + 48;
+      const footerY = legendY + 72;
+      const height = footerY + 38;
 
       const svg = d3
         .select("#capability-landscape")
@@ -185,7 +194,7 @@
         .append("desc")
         .attr("id", "cap-desc")
         .text(
-          "An ordinal matrix comparing sixteen frameworks across skill identity, paired skill lift, stateful execution, trace evidence, executable checks, behavioral and semantic scoring, safety and static validation, and search or evolution. The matrix encodes native, strong, adapter, or outside-scope support and does not rank overall product quality.",
+          "An ordinal matrix comparing seventeen frameworks across skill identity, paired skill lift, stateful execution, trace evidence, executable checks, behavioral and semantic scoring, safety and static validation, and search or evolution. The matrix encodes native, strong, adapter, or outside-scope support and does not rank overall product quality.",
         );
 
       svg.append("rect").attr("width", width).attr("height", height).attr("fill", "#ffffff");
@@ -324,7 +333,7 @@
         ["adapter", "Adapter or manual convention"],
         ["none", "Outside the framework's center of gravity"],
       ];
-      const legend = svg.append("g").attr("transform", "translate(54, 1210)").attr("aria-label", "Legend");
+      const legend = svg.append("g").attr("transform", `translate(54, ${legendY})`).attr("aria-label", "Legend");
 
       legend
         .selectAll("g.legend-item")
@@ -355,7 +364,7 @@
       svg
         .append("text")
         .attr("x", 54)
-        .attr("y", 1282)
+        .attr("y", footerY)
         .attr("fill", "#475569")
         .attr("font-size", 13)
         .text(

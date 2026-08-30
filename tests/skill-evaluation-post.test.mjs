@@ -97,12 +97,25 @@ test('wide Mermaid diagrams retain a readable mobile scale with an explicit scro
     /img\[alt\^='Capability landscape for modern skill-evaluation'\][\s\S]*?width: 80rem/,
   );
   assert.match(globalCss, /Scroll horizontally to inspect the full figure/);
+  assert.match(
+    globalCss,
+    /\.prose \[data-diagram='mermaid'\] \.nodeLabel p,[\s\S]*?color: inherit !important;/,
+  );
 });
 
 test('capability matrix covers execution, testing, RAG, typed, and observability tools', () => {
   for (const framework of [
     'Harbor',
     'NVIDIA SkillEvaluator',
+    'agent-skill-eval',
+    'agent-skills-eval',
+    'Skillgrade',
+    'SkillPortrait',
+    'SkillBenchmark',
+    'SkillsBench',
+    'Hugging Face upskill',
+    'SkillCompass',
+    'Microsoft SkillLens',
     'AWS sample skill-eval',
     'SkillTester',
     'Inspect AI',
@@ -114,6 +127,7 @@ test('capability matrix covers execution, testing, RAG, typed, and observability
     'MLflow',
     'Langfuse',
     'Phoenix',
+    'Opik',
     'LangSmith',
     'Microsoft SkillOpt',
     'SkillOps',
@@ -124,6 +138,14 @@ test('capability matrix covers execution, testing, RAG, typed, and observability
   assert.match(post, /no-skill\/with-skill Skill Lift/);
   assert.match(post, /Task runners and evaluation libraries/);
   assert.match(post, /Evolution and library operations are not evaluation frameworks/);
+  assert.match(post, /representative, not exhaustive/);
+  assert.match(post, /W&B Weave/);
+  assert.match(post, /TruLens/);
+  assert.match(post, /Braintrust/);
+  assert.match(post, /SWE-Skills-Bench/);
+  assert.match(post, /Workspace separation is not process\/credential isolation/i);
+  assert.match(post, /unpaired Welch interval do not respect the matched task design/i);
+  assert.match(post, /root text says Apache-2\.0 while \[npm metadata\][^\n]+says MIT/i);
 });
 
 test('study controls remain explicit without the removed YAML contract chapter', () => {
@@ -139,6 +161,42 @@ test('study controls remain explicit without the removed YAML contract chapter',
     assert.ok(post.includes(required), `Missing study control: ${required}`);
   }
   assert.doesNotMatch(post, /A minimal, auditable study contract|```yaml/);
+});
+
+test('published claims define the estimand, statistical unit, and honest holdout policy', () => {
+  for (const required of [
+    'target_skill_lift',
+    'effect of **making the exact skill bundle available**',
+    'conditional on forced exposure',
+    'trigger-negative',
+    'false activation',
+    'separate mechanism estimand',
+    'The task is the statistical unit',
+    'pseudoreplication',
+    'exact McNemar diagnostic',
+    'practically meaningful',
+    'underpowered study exploratory',
+    'declared multiplicity procedure',
+    'failure to detect a loss is not evidence of non-inferiority',
+    'one-finalist, one-release policy',
+    'retire that cohort',
+  ]) {
+    assert.ok(post.includes(required), `Missing statistical control: ${required}`);
+  }
+
+  assert.match(post, /SkillsBench[\s\S]{0,500}matched no-Skills and curated-Skills/);
+  assert.match(post, /39 of 49 skills with zero pass-rate improvement/);
+  assert.match(post, /307 skill-induced failures/);
+});
+
+test('published capability coding is accessible and executable skills receive security gates', () => {
+  assert.match(post, /\| Framework \| Skill artifact \| Paired lift \| Stateful world \| Trace evidence \|/);
+  assert.match(post, /\| Framework \| Executable checks \| Behavior \/ semantics \| Safety \/ static \| Search \/ evolution \|/);
+  assert.match(post, /must not be summed\s+into a rank/);
+  assert.match(post, /least privilege and no\s+production secrets/);
+  assert.match(post, /restrict network egress/);
+  assert.match(post, /blinded representative human review/);
+  assert.match(post, /caches, and persistent agent memory between arms/);
 });
 
 test('WikiSkill is integrated without overstating open-source readiness', () => {
@@ -159,9 +217,10 @@ test('WikiSkill is integrated without overstating open-source readiness', () => 
 });
 
 test('local case-study claims remain bounded and retain failed promotions', () => {
+  assert.match(frontmatter, /authors:\s*\n\s+- Guillermo Villarroel/);
   assert.match(post, /24 Harbor jobs and 78 trials/);
   assert.match(post, /not identifiable/);
-  assert.match(post, /98\.674426%/);
+  assert.match(post, /98\.7%/);
   assert.match(post, /zero-regression rule retained the baseline/);
   assert.match(post, /Both supporting repositories and the reports cited above are public/);
   assert.match(post, /No private\s+knowledge-corpus text/);
