@@ -813,10 +813,12 @@ main {
 }
 
 .prose p:has(> img[alt^='RoadRails definitions']),
+.prose p:has(> img[alt^='Editorial treatment boundary']),
 .prose p:has(> img[alt^='Evolution from static benchmarks']),
 .prose p:has(> img[alt^='WikiSkill separates']),
 .prose p:has(> img[alt^='Architecture of a controlled skill evaluation']),
 .prose p:has(> img[alt^='Horizontal C4 architecture']),
+.prose p:has(> img[alt^='Editorial architecture of a controlled skill evaluation']),
 .prose p:has(> img[alt^='Capability landscape for modern skill-evaluation']),
 .prose p:has(> img[alt^='Decision guide for selecting an evaluation framework']) {
   overflow-x: auto;
@@ -826,10 +828,12 @@ main {
 }
 
 .prose p:has(> img[alt^='RoadRails definitions'])::before,
+.prose p:has(> img[alt^='Editorial treatment boundary'])::before,
 .prose p:has(> img[alt^='Evolution from static benchmarks'])::before,
 .prose p:has(> img[alt^='WikiSkill separates'])::before,
 .prose p:has(> img[alt^='Architecture of a controlled skill evaluation'])::before,
 .prose p:has(> img[alt^='Horizontal C4 architecture'])::before,
+.prose p:has(> img[alt^='Editorial architecture of a controlled skill evaluation'])::before,
 .prose p:has(> img[alt^='Capability landscape for modern skill-evaluation'])::before,
 .prose p:has(> img[alt^='Decision guide for selecting an evaluation framework'])::before {
   content: 'Scroll horizontally to inspect the full figure';
@@ -843,6 +847,11 @@ main {
 }
 
 .prose img[alt^='RoadRails definitions'] {
+  width: 66rem;
+  max-width: none;
+}
+
+.prose img[alt^='Editorial treatment boundary'] {
   width: 66rem;
   max-width: none;
 }
@@ -870,6 +879,11 @@ main {
 
 .prose img[alt^='Capability landscape for modern skill-evaluation'] {
   width: 80rem;
+  max-width: none;
+}
+
+.prose img[alt^='Editorial architecture of a controlled skill evaluation'] {
+  width: 70rem;
   max-width: none;
 }
 

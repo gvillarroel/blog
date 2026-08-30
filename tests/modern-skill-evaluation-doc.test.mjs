@@ -62,6 +62,10 @@ test('generated SVGs retain dimensions, content, and accessible descriptions', (
   assert.match(d3Svg, /NVIDIA SkillEvaluator/);
   assert.match(d3Svg, /not a benchmark/i);
 
+  const d3Source = readFileSync(new URL('capability-landscape.html', assetRoot), 'utf8');
+  assert.doesNotMatch(d3Source, /label:\s*["'](?:N|S|A|-)["']/);
+  assert.doesNotMatch(d3Source, /\.text\(state\[[^\]]+\]\.label\)/);
+
   const railsSource = readFileSync(new URL('definition-railroads.mmd', assetRoot), 'utf8');
   const railsSvg = readFileSync(new URL('definition-railroads.static.svg', assetRoot), 'utf8');
   assert.match(railsSource, /railroad-ebnf-beta/);
@@ -108,6 +112,35 @@ test('visuals use embedded light backgrounds and high-contrast authored palettes
   assert.match(railroadSvg, /background-color: white/);
   assert.match(railroadSvg, /<title\b[^>]*>Four artifact definitions/);
   assert.match(railroadSvg, /<desc\b/);
+
+  for (const name of [
+    'treatment-boundary-editorial-v2.png',
+    'evaluation-system-editorial-v2.png',
+  ]) {
+    assert.ok(existsSync(new URL(name, assetRoot)), `Missing editorial image: ${name}`);
+  }
+});
+
+test('substantive report paragraphs carry paired public-source links', () => {
+  const authoredBody = doc.split('\n## References\n', 1)[0];
+  const blocks = authoredBody.split(/\r?\n\s*\r?\n/);
+  const uncited = [];
+
+  for (const block of blocks) {
+    const text = block.replace(/\r?\n/g, ' ').trim();
+    if (
+      text.length < 50 ||
+      /^(?:#{1,6}\s|!\[|\||```|---|\s*(?:[-*+] |\d+\. ))/.test(text) ||
+      /^\[[^\]]+\]\([^)]+\)(?:\s*\|\s*\[[^\]]+\]\([^)]+\))*$/.test(text)
+    ) {
+      continue;
+    }
+
+    const sourceCount = (text.match(/https:\/\//g) ?? []).length;
+    if (sourceCount < 2) uncited.push(text.slice(0, 140));
+  }
+
+  assert.deepEqual(uncited, []);
 });
 
 test('comparison covers the intended open and proprietary framework set', () => {

@@ -39,14 +39,15 @@ test('skill-evaluation post preserves the Mermaid promotion diagram and publishe
   }
 });
 
-test('published post includes the light, high-contrast Railroad, D3, and editorial visual package', () => {
+test('published post includes the light, high-contrast RoadRails, D3, and editorial visual package', () => {
   const assetRoot = new URL('../src/assets/images/modern-skill-evaluation/', import.meta.url);
   for (const name of [
     'skill-evaluation-hero.png',
+    'treatment-boundary-editorial-v2.png',
     'definition-railroads.static.svg',
     'evaluation-evolution.static.svg',
     'wikiskill-loop.static.svg',
-    'evaluation-system-c4.svg',
+    'evaluation-system-editorial-v2.png',
     'capability-landscape.svg',
     'selection-guide.static.svg',
   ]) {
@@ -83,6 +84,14 @@ test('wide Mermaid diagrams retain a readable mobile scale with an explicit scro
     /\[data-diagram='mermaid'\]\.diagram--wide \.mermaid > svg[\s\S]*?width: 72rem/,
   );
   assert.match(globalCss, /img\[alt\^='RoadRails definitions'\][\s\S]*?width: 66rem/);
+  assert.match(
+    globalCss,
+    /img\[alt\^='Editorial treatment boundary'\][\s\S]*?width: 66rem/,
+  );
+  assert.match(
+    globalCss,
+    /img\[alt\^='Editorial architecture of a controlled skill evaluation'\][\s\S]*?width: 70rem/,
+  );
   assert.match(
     globalCss,
     /img\[alt\^='Capability landscape for modern skill-evaluation'\][\s\S]*?width: 80rem/,
@@ -164,4 +173,26 @@ test('every inline source is declared and no private corpus location is publishe
   }
   assert.doesNotMatch(post, /knowledge\/expert-sources|knowledge\/private-sources|\.know\//i);
   assert.doesNotMatch(post, /C:\\Users\\|C:\/Users\//i);
+});
+
+test('substantive article paragraphs carry paired public-source links', () => {
+  const proseBody = body.replace(/```[\s\S]*?```/g, '');
+  const blocks = proseBody.split(/\r?\n\s*\r?\n/);
+  const uncited = [];
+
+  for (const block of blocks) {
+    const text = block.replace(/\r?\n/g, ' ').trim();
+    if (
+      text.length < 50 ||
+      /^(?:#{1,6}\s|!\[|\||```|---|\s*(?:[-*+] |\d+\. )|\*\*PDF edition:)/.test(text) ||
+      /^\[[^\]]+\]\([^)]+\)(?:\s*\|\s*\[[^\]]+\]\([^)]+\))*$/.test(text)
+    ) {
+      continue;
+    }
+
+    const sourceCount = (text.match(/https:\/\//g) ?? []).length;
+    if (sourceCount < 2) uncited.push(text.slice(0, 140));
+  }
+
+  assert.deepEqual(uncited, []);
 });

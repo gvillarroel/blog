@@ -143,25 +143,26 @@
       ];
 
       const state = {
-        native: { label: "N", fill: "#0b6e4f", text: "#ffffff" },
-        strong: { label: "S", fill: "#005ea8", text: "#ffffff" },
-        adapter: { label: "A", fill: "#7a3e00", text: "#ffffff" },
-        none: { label: "-", fill: "#374151", text: "#ffffff" },
+        native: { fill: "#45842a", stroke: "#315f1e" },
+        strong: { fill: "#007298", stroke: "#00546f" },
+        adapter: { fill: "#e77204", stroke: "#a94f00" },
+        none: { fill: "#e2e8f0", stroke: "#64748b" },
       };
 
       const width = 1600;
-      const height = 1450;
-      const left = 350;
-      const gridTop = 242;
-      const columnWidth = 110;
-      const rowHeight = 57;
-      const cellSize = 40;
+      const height = 1320;
+      const left = 360;
+      const gridTop = 220;
+      const columnWidth = 105;
+      const rowHeight = 52;
+      const cellWidth = 68;
+      const cellHeight = 20;
       const rightLabelX = left + dimensions.length * columnWidth + 32;
       const rowY = (index) => {
         const groupBreaks = rows
           .slice(1, index + 1)
           .filter((row, offset) => row.group !== rows[offset].group).length;
-        return gridTop + index * rowHeight + groupBreaks * 32;
+        return gridTop + index * rowHeight + groupBreaks * 28;
       };
 
       const svg = d3
@@ -208,7 +209,7 @@
 
       const header = svg.append("g").attr("aria-label", "Capability columns");
       dimensions.forEach((parts, index) => {
-        const x = left + index * columnWidth + cellSize / 2;
+        const x = left + index * columnWidth + cellWidth / 2;
         const text = header
           .append("text")
           .attr("x", x)
@@ -303,74 +304,58 @@
           .join("g")
           .attr("class", "matrix-cell")
           .attr("id", (d) => `cell-${framework.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${d.columnIndex}`)
-          .attr("transform", (d) => `translate(${left + d.columnIndex * columnWidth}, 4)`);
+          .attr("transform", (d) => `translate(${left + d.columnIndex * columnWidth}, 14)`);
 
         cells
           .append("rect")
-          .attr("width", cellSize)
-          .attr("height", cellSize)
-          .attr("rx", 9)
+          .attr("width", cellWidth)
+          .attr("height", cellHeight)
+          .attr("rx", 6)
           .attr("fill", (d) => state[d.value].fill)
-          .attr("stroke", "#ffffff")
-          .attr("stroke-width", 2);
-
-        cells
-          .append("text")
-          .attr("x", cellSize / 2)
-          .attr("y", 28)
-          .attr("text-anchor", "middle")
-          .attr("fill", (d) => state[d.value].text)
-          .attr("font-size", 17)
-          .attr("font-weight", 800)
-          .text((d) => state[d.value].label);
+          .attr("stroke", (d) => state[d.value].stroke)
+          .attr("stroke-width", 1.5);
 
         cells.append("title").text((d) => `${framework.name}: ${dimensions[d.columnIndex].join(" ")} - ${d.value}`);
       });
 
       const legendData = [
-        ["native", "N  Native / first-class"],
-        ["strong", "S  Strong documented support"],
-        ["adapter", "A  Adapter or manual convention"],
-        ["none", "-  Outside the framework's center of gravity"],
+        ["native", "Native / first-class"],
+        ["strong", "Strong documented support"],
+        ["adapter", "Adapter or manual convention"],
+        ["none", "Outside the framework's center of gravity"],
       ];
-      const legend = svg.append("g").attr("transform", "translate(54, 1340)").attr("aria-label", "Legend");
+      const legend = svg.append("g").attr("transform", "translate(54, 1210)").attr("aria-label", "Legend");
 
       legend
         .selectAll("g.legend-item")
         .data(legendData)
         .join("g")
         .attr("class", "legend-item")
-        .attr("transform", (_, index) => `translate(${index * 360}, 0)`)
+        .attr("transform", (_, index) => `translate(${index * 365}, 0)`)
         .each(function ([key, label]) {
           const item = d3.select(this);
           item
             .append("rect")
-            .attr("width", 34)
-            .attr("height", 34)
-            .attr("rx", 7)
-            .attr("fill", state[key].fill);
+            .attr("width", 54)
+            .attr("height", 20)
+            .attr("y", 7)
+            .attr("rx", 6)
+            .attr("fill", state[key].fill)
+            .attr("stroke", state[key].stroke)
+            .attr("stroke-width", 1.5);
           item
             .append("text")
-            .attr("x", 17)
-            .attr("y", 23)
-            .attr("text-anchor", "middle")
-            .attr("font-size", 14)
-            .attr("font-weight", 800)
-            .attr("fill", state[key].text)
-            .text(state[key].label);
-          item
-            .append("text")
-            .attr("x", 46)
+            .attr("x", 68)
             .attr("y", 23)
             .attr("font-size", 14)
             .attr("fill", "#1f2937")
-            .text(label.slice(3));
+            .text(label);
         });
 
       svg
         .append("text")
         .attr("x", 54)
-        .attr("y", 1415)
+        .attr("y", 1282)
         .attr("fill", "#475569")
         .attr("font-size", 13)
         .text(
