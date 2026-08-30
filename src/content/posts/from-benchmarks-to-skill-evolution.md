@@ -4,7 +4,7 @@ summary: "A practical history and capability map of open evaluation frameworks, 
 pubDate: 2026-08-24
 updatedDate: 2026-08-30
 authors:
-  - Guillermo Villarroel
+  - Gerardo Villarroel
 tags:
   - agent-evaluation
   - skill-evolution

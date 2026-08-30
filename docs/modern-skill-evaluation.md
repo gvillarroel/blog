@@ -2,7 +2,7 @@
 
 ## A framework selection guide for models, agent harnesses, and reusable skills
 
-**Revised final report - 2026-08-30** · **Author:** Guillermo Villarroel
+**Revised final report - 2026-08-30** · **Author:** Gerardo Villarroel
 **Primary question:** How can we estimate whether a versioned skill improved an agent on
 unseen work strongly enough to justify promotion, without confusing that effect with
 model, harness, environment, or grader changes?

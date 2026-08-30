@@ -217,7 +217,7 @@ test('WikiSkill is integrated without overstating open-source readiness', () => 
 });
 
 test('local case-study claims remain bounded and retain failed promotions', () => {
-  assert.match(frontmatter, /authors:\s*\n\s+- Guillermo Villarroel/);
+  assert.match(frontmatter, /authors:\s*\n\s+- Gerardo Villarroel/);
   assert.match(post, /24 Harbor jobs and 78 trials/);
   assert.match(post, /not identifiable/);
   assert.match(post, /98\.7%/);

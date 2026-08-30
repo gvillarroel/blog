@@ -268,7 +268,7 @@ test('WikiSkill is integrated as a persistent-learning method without overstatin
 });
 
 test('local case-study evidence stays bounded and private corpora stay private', () => {
-  assert.match(doc, /\*\*Author:\*\* Guillermo Villarroel/);
+  assert.match(doc, /\*\*Author:\*\* Gerardo Villarroel/);
   assert.match(doc, /24 Harbor jobs and 78 trials/);
   assert.match(doc, /98\.7%/);
   assert.match(doc, /zero-regression rule retained the baseline/);
