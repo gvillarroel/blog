@@ -177,6 +177,8 @@ references, and assets—often rooted at `SKILL.md`—that is injected into an o
 frozen agent. A system prompt alone can be a treatment, but it is not automatically a
 portable skill.
 
+**PDF edition:** [download the revised 16-page framework-selection guide](../../reports/modern-skill-evaluation-framework-selection-guide.pdf).
+
 ![Conceptual path from immutable traces through persistent knowledge to gated skill promotion](../../assets/images/modern-skill-evaluation/skill-evaluation-hero.png)
 
 *Immutable traces accumulate into persistent knowledge; knowledge proposes a versioned

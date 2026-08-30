@@ -67,6 +67,18 @@ test('published post includes the light, high-contrast Railroad, D3, and editori
   assert.match(capability, /fill="#ffffff"/);
 });
 
+test('published post exposes the verified PDF edition', () => {
+  const pdfPath = new URL(
+    '../public/reports/modern-skill-evaluation-framework-selection-guide.pdf',
+    import.meta.url,
+  );
+  assert.ok(existsSync(pdfPath), 'Missing public PDF edition');
+  assert.match(
+    post,
+    /\(\.\.\/\.\.\/reports\/modern-skill-evaluation-framework-selection-guide\.pdf\)/,
+  );
+});
+
 test('wide Mermaid diagrams retain a readable mobile scale with an explicit scroll hint', () => {
   assert.match(diagramRuntime, /viewBox\.width \/ viewBox\.height < 2\.4/);
   assert.match(diagramRuntime, /classList\.add\('diagram--wide'\)/);
