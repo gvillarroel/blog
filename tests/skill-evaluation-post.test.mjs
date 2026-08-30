@@ -25,13 +25,12 @@ const mermaidDiagrams = [...post.matchAll(/```mermaid\r?\n([\s\S]*?)```/g)].map(
   (match) => match[1],
 );
 
-test('skill-evaluation post preserves the historical and promotion diagrams', () => {
-  assert.equal(mermaidDiagrams.length, 2);
-  assert.match(mermaidDiagrams[0], /static benchmarks/);
-  assert.match(mermaidDiagrams[0], /Evaluation-guided evolution/);
-  assert.match(mermaidDiagrams[0], /Persistent learning/);
-  assert.match(mermaidDiagrams[1], /Holdout passes/);
-  assert.match(mermaidDiagrams[1], /Promote independently/);
+test('skill-evaluation post preserves the Mermaid promotion diagram and publishes the D3 history', () => {
+  assert.equal(mermaidDiagrams.length, 1);
+  assert.match(mermaidDiagrams[0], /Holdout passes/);
+  assert.match(mermaidDiagrams[0], /Promote independently/);
+  assert.match(post, /evaluation-evolution\.static\.svg/);
+  assert.match(post, /Each generation adds a new observable or experimental control/);
 
   for (const diagram of mermaidDiagrams) {
     assert.match(diagram, /"background": "#ffffff"/);
@@ -45,8 +44,9 @@ test('published post includes the light, high-contrast Railroad, D3, and editori
   for (const name of [
     'skill-evaluation-hero.png',
     'definition-railroads.static.svg',
+    'evaluation-evolution.static.svg',
     'wikiskill-loop.static.svg',
-    'evaluation-system.static.svg',
+    'evaluation-system-c4.svg',
     'capability-landscape.svg',
     'selection-guide.static.svg',
   ]) {
@@ -58,9 +58,12 @@ test('published post includes the light, high-contrast Railroad, D3, and editori
   const capability = readFileSync(new URL('capability-landscape.svg', assetRoot), 'utf8');
   assert.match(rails, /class="railroad-diagram"/);
   assert.match(rails, /agent_harness =/);
-  assert.match(rails, /evaluation_harness =/);
+  assert.match(rails, /evaluation =/);
   assert.match(rails, /background-color: white/);
+  assert.doesNotMatch(rails, /model weights|fixed model API/i);
   assert.match(capability, /Capability landscape/);
+  assert.match(capability, /Paired skill lift/);
+  assert.match(capability, /NVIDIA SkillEvaluator/);
   assert.match(capability, /fill="#ffffff"/);
 });
 
@@ -83,6 +86,9 @@ test('wide Mermaid diagrams retain a readable mobile scale with an explicit scro
 test('capability matrix covers execution, testing, RAG, typed, and observability tools', () => {
   for (const framework of [
     'Harbor',
+    'NVIDIA SkillEvaluator',
+    'AWS sample skill-eval',
+    'SkillTester',
     'Inspect AI',
     'Promptfoo',
     'OpenAI Evals',
@@ -93,26 +99,30 @@ test('capability matrix covers execution, testing, RAG, typed, and observability
     'Langfuse',
     'Phoenix',
     'LangSmith',
+    'Microsoft SkillOpt',
+    'SkillOps',
   ]) {
     assert.match(post, new RegExp(`\\| \\[?${framework.replace(' AI', '(?: AI)?')}`));
   }
-  assert.match(post, /Skill as treatment/);
-  assert.match(post, /Isolated, stateful world/);
-  assert.match(post, /Built-in evolution/);
+  assert.match(post, /Dedicated skill evaluators/);
+  assert.match(post, /no-skill\/with-skill Skill Lift/);
+  assert.match(post, /Task runners and evaluation libraries/);
+  assert.match(post, /Evolution and library operations are not evaluation frameworks/);
 });
 
-test('study contract freezes identity, splits, failure policy, and promotion authority', () => {
+test('study controls remain explicit without the removed YAML contract chapter', () => {
   for (const required of [
-    'baseline_digest',
-    'task-and-environment-digests',
-    'validation: one-way-release',
-    'holdout: sealed-until-finalist',
-    'semantic_failure: 0',
-    'verified_external_failure: bounded-and-lineage-preserving',
-    'authority: independent-reviewer',
+    'complete directory',
+    'Disjoint data roles',
+    'Holdout release is one-way',
+    'Do not retry semantic failures until they pass',
+    'immutable skill provenance',
+    'independent promotion',
+    'no-skill/with-skill contrast',
   ]) {
     assert.ok(post.includes(required), `Missing study control: ${required}`);
   }
+  assert.doesNotMatch(post, /A minimal, auditable study contract|```yaml/);
 });
 
 test('WikiSkill is integrated without overstating open-source readiness', () => {
@@ -137,7 +147,8 @@ test('local case-study claims remain bounded and retain failed promotions', () =
   assert.match(post, /not identifiable/);
   assert.match(post, /98\.674426%/);
   assert.match(post, /zero-regression rule retained the baseline/);
-  assert.match(post, /source-visible, not\s+open-source dependencies/);
+  assert.match(post, /Both supporting repositories and the reports cited above are public/);
+  assert.match(post, /No private\s+knowledge-corpus text/);
 });
 
 test('every inline source is declared and no private corpus location is published', () => {

@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Evolution of evaluation systems</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: #ffffff;
+      }
+
+      body {
+        display: grid;
+        place-items: center;
+        font-family: Arial, sans-serif;
+      }
+
+      svg {
+        display: block;
+        width: min(100vw, 1600px);
+        height: auto;
+        background: #ffffff;
+      }
+
+      .generation-card,
+      .retention-cell {
+        animation: reveal 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      }
+
+      @keyframes reveal {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .generation-card,
+        .retention-cell { animation: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <svg id="evaluation-evolution"></svg>
+    <script src="../../../node_modules/d3/dist/d3.min.js"></script>
+    <script>
+      const generations = [
+        { title: ["Static", "benchmarks"], unit: "answer + metric", icon: "target" },
+        { title: ["Evals", "as code"], unit: "scenario + graders", icon: "code" },
+        { title: ["Agent", "benchmarks"], unit: "trajectory + tools", icon: "trajectory" },
+        { title: ["Isolated", "task worlds"], unit: "state + artifacts", icon: "world" },
+        { title: ["Evaluation-guided", "evolution"], unit: "candidate + gate", icon: "evolve" },
+        { title: ["Persistent", "skill systems"], unit: "memory + library health", icon: "library" },
+      ];
+
+      const capabilities = [
+        { label: "Answer outcome + metric", start: 0 },
+        { label: "Versioned scenarios + layered graders", start: 1 },
+        { label: "Trajectory + tool evidence", start: 2 },
+        { label: "State + artifacts + resource policy", start: 3 },
+        { label: "Skill identity + candidate lineage", start: 4 },
+        { label: "Persistent knowledge + library health", start: 5 },
+      ];
+
+      const color = {
+        ink: "#111827",
+        navy: "#0f2742",
+        muted: "#475569",
+        line: "#64748b",
+        pale: "#f8fafc",
+        blue: "#005ea8",
+        bluePale: "#e8f4fc",
+        teal: "#0b6e4f",
+        tealPale: "#dcfce7",
+        amber: "#9a5b00",
+        amberPale: "#fff4cc",
+        absent: "#cbd5e1",
+        white: "#ffffff",
+      };
+
+      const width = 1600;
+      const height = 1120;
+      const svg = d3
+        .select("#evaluation-evolution")
+        .attr("viewBox", `0 0 ${width} ${height}`)
+        .attr("role", "img")
+        .attr("data-diagram-background", "light")
+        .attr("aria-labelledby", "evolution-title evolution-desc");
+
+      svg.append("title").attr("id", "evolution-title")
+        .text("Six generations of evaluation systems and the capabilities retained by each generation");
+      svg.append("desc").attr("id", "evolution-desc")
+        .text("A horizontal sequence from static benchmarks to persistent skill systems. A matrix below shows that each generation retains earlier evidence types and adds a new component: versioned graders, trajectories, task-world state, skill lineage, and persistent knowledge with library health.");
+      svg.append("rect").attr("width", width).attr("height", height).attr("fill", color.white);
+
+      svg.append("text")
+        .attr("x", 52).attr("y", 62)
+        .attr("fill", color.ink).attr("font-size", 36).attr("font-weight", 750)
+        .text("Evaluation evolved by adding evidence—not by discarding it");
+      svg.append("text")
+        .attr("x", 52).attr("y", 102)
+        .attr("fill", color.muted).attr("font-size", 19)
+        .text("Each generation changes the unit of observation and keeps the controls that still matter.");
+
+      const cardY = 154;
+      const cardW = 226;
+      const cardH = 268;
+      const gap = 34;
+      const cardX = (index) => 52 + index * (cardW + gap);
+
+      function line(group, x1, y1, x2, y2, stroke = color.navy, widthValue = 5) {
+        group.append("line")
+          .attr("x1", x1).attr("y1", y1).attr("x2", x2).attr("y2", y2)
+          .attr("stroke", stroke).attr("stroke-width", widthValue).attr("stroke-linecap", "round");
+      }
+
+      function drawIcon(group, type) {
+        const g = group.append("g").attr("transform", "translate(113,92)")
+          .attr("fill", "none").attr("stroke", color.navy).attr("stroke-width", 5)
+          .attr("stroke-linecap", "round").attr("stroke-linejoin", "round");
+
+        if (type === "target") {
+          [38, 25, 12].forEach((r, index) => g.append("circle").attr("r", r)
+            .attr("stroke", index === 2 ? color.teal : color.navy));
+          g.append("circle").attr("r", 6).attr("fill", color.teal).attr("stroke", "none");
+        } else if (type === "code") {
+          g.append("path").attr("d", "M-35,-28 L-55,0 L-35,28");
+          g.append("path").attr("d", "M35,-28 L55,0 L35,28");
+          g.append("path").attr("d", "M13,-38 L-13,38").attr("stroke", color.teal);
+        } else if (type === "trajectory") {
+          g.append("path").attr("d", "M-48,30 C-26,-34 8,42 48,-28");
+          [[-48,30],[-24,-15],[6,16],[48,-28]].forEach(([x,y], index) =>
+            g.append("circle").attr("cx", x).attr("cy", y).attr("r", 9)
+              .attr("fill", index === 3 ? color.teal : color.white)
+              .attr("stroke", index === 3 ? color.teal : color.navy));
+        } else if (type === "world") {
+          g.append("path").attr("d", "M0,-48 L44,-24 L44,28 L0,52 L-44,28 L-44,-24 Z");
+          g.append("path").attr("d", "M-44,-24 L0,0 L44,-24 M0,0 L0,52");
+          g.append("path").attr("d", "M-20,-34 L24,-10").attr("stroke", color.teal);
+        } else if (type === "evolve") {
+          g.append("path").attr("d", "M-48,-7 A50,50 0 0 1 35,-37");
+          g.append("path").attr("d", "M34,-52 L39,-35 L21,-31").attr("stroke", color.teal);
+          g.append("path").attr("d", "M48,7 A50,50 0 0 1 -35,37");
+          g.append("path").attr("d", "M-34,52 L-39,35 L-21,31").attr("stroke", color.amber);
+          g.append("circle").attr("r", 14).attr("fill", color.white);
+          g.append("path").attr("d", "M-7,0 L-1,7 L9,-7").attr("stroke", color.teal);
+        } else if (type === "library") {
+          g.append("path").attr("d", "M0,-35 C-18,-48 -38,-46 -52,-37 L-52,38 C-35,29 -17,31 0,43 Z");
+          g.append("path").attr("d", "M0,-35 C18,-48 38,-46 52,-37 L52,38 C35,29 17,31 0,43 Z");
+          line(g, 0, -35, 0, 43, color.teal, 5);
+          g.append("circle").attr("cx", 39).attr("cy", -33).attr("r", 9)
+            .attr("fill", color.amberPale).attr("stroke", color.amber);
+        }
+      }
+
+      const cards = svg.selectAll("g.generation-card")
+        .data(generations).join("g")
+        .attr("class", "generation-card")
+        .attr("transform", (_, index) => `translate(${cardX(index)},${cardY})`)
+        .style("animation-delay", (_, index) => `${index * 90}ms`);
+
+      cards.append("rect")
+        .attr("width", cardW).attr("height", cardH).attr("rx", 18)
+        .attr("fill", (_, index) => index === generations.length - 1 ? color.tealPale : color.pale)
+        .attr("stroke", (_, index) => index === generations.length - 1 ? color.teal : color.line)
+        .attr("stroke-width", (_, index) => index === generations.length - 1 ? 3 : 2);
+      cards.append("circle").attr("cx", 25).attr("cy", 25).attr("r", 15)
+        .attr("fill", (_, index) => index === generations.length - 1 ? color.teal : color.blue);
+      cards.append("text").attr("x", 25).attr("y", 31).attr("text-anchor", "middle")
+        .attr("fill", color.white).attr("font-size", 15).attr("font-weight", 750)
+        .text((_, index) => index + 1);
+      cards.each(function(datum) { drawIcon(d3.select(this), datum.icon); });
+      cards.each(function(datum) {
+        const text = d3.select(this).append("text")
+          .attr("x", cardW / 2).attr("y", 171).attr("text-anchor", "middle")
+          .attr("fill", color.ink).attr("font-size", 22).attr("font-weight", 750);
+        datum.title.forEach((part, index) => text.append("tspan")
+          .attr("x", cardW / 2).attr("dy", index === 0 ? 0 : 27).text(part));
+      });
+      cards.append("text").attr("x", cardW / 2).attr("y", 242).attr("text-anchor", "middle")
+        .attr("fill", color.muted).attr("font-size", 15).attr("font-weight", 650)
+        .text((datum) => datum.unit);
+
+      for (let index = 0; index < generations.length - 1; index += 1) {
+        const start = cardX(index) + cardW + 5;
+        const end = cardX(index + 1) - 8;
+        svg.append("line").attr("x1", start).attr("y1", cardY + 130)
+          .attr("x2", end).attr("y2", cardY + 130)
+          .attr("stroke", color.blue).attr("stroke-width", 4).attr("stroke-linecap", "round");
+        svg.append("path").attr("d", `M${end - 8},${cardY + 121} L${end},${cardY + 130} L${end - 8},${cardY + 139}`)
+          .attr("fill", "none").attr("stroke", color.blue).attr("stroke-width", 4)
+          .attr("stroke-linecap", "round").attr("stroke-linejoin", "round");
+      }
+
+      svg.append("text").attr("x", 52).attr("y", 492)
+        .attr("fill", color.navy).attr("font-size", 25).attr("font-weight", 750)
+        .text("What survives into each generation");
+      svg.append("text").attr("x", 52).attr("y", 523)
+        .attr("fill", color.muted).attr("font-size", 16)
+        .text("Amber adds a new evidence component; teal retains it in every later generation.");
+
+      const labelX = 52;
+      const gridX = 404;
+      const colW = 188;
+      const rowTop = 632;
+      const rowH = 70;
+
+      generations.forEach((generation, index) => {
+        const text = svg.append("text").attr("x", gridX + index * colW + colW / 2)
+          .attr("y", 570).attr("text-anchor", "middle")
+          .attr("fill", color.ink).attr("font-size", 14).attr("font-weight", 700);
+        generation.title.forEach((part, partIndex) => text.append("tspan")
+          .attr("x", gridX + index * colW + colW / 2)
+          .attr("dy", partIndex === 0 ? 0 : 18).text(part));
+      });
+
+      capabilities.forEach((capability, rowIndex) => {
+        const y = rowTop + rowIndex * rowH;
+        svg.append("rect").attr("x", 42).attr("y", y - 38)
+          .attr("width", width - 84).attr("height", 60).attr("rx", 9)
+          .attr("fill", rowIndex % 2 === 0 ? color.pale : color.white)
+          .attr("stroke", "#e2e8f0");
+        svg.append("text").attr("x", labelX + 12).attr("y", y)
+          .attr("fill", color.ink).attr("font-size", 17).attr("font-weight", 650)
+          .text(capability.label);
+
+        generations.forEach((_, colIndex) => {
+          const x = gridX + colIndex * colW + colW / 2;
+          const state = colIndex < capability.start ? "absent" : colIndex === capability.start ? "added" : "retained";
+          const cell = svg.append("g").attr("class", "retention-cell")
+            .style("animation-delay", `${(rowIndex * generations.length + colIndex) * 22}ms`);
+          cell.append("circle").attr("cx", x).attr("cy", y - 6).attr("r", 19)
+            .attr("fill", state === "added" ? color.amber : state === "retained" ? color.teal : color.white)
+            .attr("stroke", state === "absent" ? color.absent : state === "added" ? color.amber : color.teal)
+            .attr("stroke-width", 3);
+          cell.append("text").attr("x", x).attr("y", y + 1).attr("text-anchor", "middle")
+            .attr("fill", state === "absent" ? color.line : color.white)
+            .attr("font-size", 18).attr("font-weight", 800)
+            .text(state === "added" ? "+" : state === "retained" ? "✓" : "–");
+        });
+      });
+
+      const legend = [
+        { label: "added here", fill: color.amber, stroke: color.amber, mark: "+", text: color.white },
+        { label: "retained", fill: color.teal, stroke: color.teal, mark: "✓", text: color.white },
+        { label: "not yet present", fill: color.white, stroke: color.absent, mark: "–", text: color.line },
+      ];
+      const legendG = svg.append("g").attr("transform", "translate(858,1070)");
+      legend.forEach((item, index) => {
+        const x = index * 220;
+        legendG.append("circle").attr("cx", x).attr("cy", 0).attr("r", 14)
+          .attr("fill", item.fill).attr("stroke", item.stroke).attr("stroke-width", 2.5);
+        legendG.append("text").attr("x", x).attr("y", 6).attr("text-anchor", "middle")
+          .attr("fill", item.text).attr("font-size", 15).attr("font-weight", 800).text(item.mark);
+        legendG.append("text").attr("x", x + 23).attr("y", 6)
+          .attr("fill", color.muted).attr("font-size", 15).text(item.label);
+      });
+    </script>
+  </body>
+</html>

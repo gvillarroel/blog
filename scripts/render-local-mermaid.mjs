@@ -89,7 +89,22 @@ const server = http.createServer(async (request, response) => {
       if (url.pathname === "/error") rejectSaved(new Error(body));
       else {
         await fs.mkdir(path.dirname(outputPath), { recursive: true });
-        await fs.writeFile(outputPath, body, "utf8");
+        let decoratedSvg = body.replace(
+          "<svg ",
+          '<svg data-diagram-background="light" ',
+        );
+        if (/<svg\b[^>]*\bstyle="/.test(decoratedSvg)) {
+          decoratedSvg = decoratedSvg.replace(
+            /(<svg\b[^>]*\bstyle=")/,
+            '$1background-color: white; ',
+          );
+        } else {
+          decoratedSvg = decoratedSvg.replace(
+            "<svg ",
+            '<svg style="background-color: white;" ',
+          );
+        }
+        await fs.writeFile(outputPath, decoratedSvg, "utf8");
         resolveSaved();
       }
       return;

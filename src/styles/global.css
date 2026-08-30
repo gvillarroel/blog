@@ -812,6 +812,67 @@ main {
   font-style: italic;
 }
 
+.prose p:has(> img[alt^='RoadRails definitions']),
+.prose p:has(> img[alt^='Evolution from static benchmarks']),
+.prose p:has(> img[alt^='WikiSkill separates']),
+.prose p:has(> img[alt^='Architecture of a controlled skill evaluation']),
+.prose p:has(> img[alt^='Horizontal C4 architecture']),
+.prose p:has(> img[alt^='Capability landscape for modern skill-evaluation']),
+.prose p:has(> img[alt^='Decision guide for selecting an evaluation framework']) {
+  overflow-x: auto;
+  padding: 0.45rem 0 0.7rem;
+  overscroll-behavior-inline: contain;
+  scrollbar-color: var(--accent) var(--surface-raised);
+}
+
+.prose p:has(> img[alt^='RoadRails definitions'])::before,
+.prose p:has(> img[alt^='Evolution from static benchmarks'])::before,
+.prose p:has(> img[alt^='WikiSkill separates'])::before,
+.prose p:has(> img[alt^='Architecture of a controlled skill evaluation'])::before,
+.prose p:has(> img[alt^='Horizontal C4 architecture'])::before,
+.prose p:has(> img[alt^='Capability landscape for modern skill-evaluation'])::before,
+.prose p:has(> img[alt^='Decision guide for selecting an evaluation framework'])::before {
+  content: 'Scroll horizontally to inspect the full figure';
+  display: block;
+  margin-bottom: 0.55rem;
+  color: var(--faint);
+  font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.prose img[alt^='RoadRails definitions'] {
+  width: 66rem;
+  max-width: none;
+}
+
+.prose img[alt^='Evolution from static benchmarks'] {
+  width: 76rem;
+  max-width: none;
+}
+
+.prose img[alt^='WikiSkill separates'] {
+  width: 52rem;
+  max-width: none;
+}
+
+.prose img[alt^='Architecture of a controlled skill evaluation'],
+.prose img[alt^='Horizontal C4 architecture'] {
+  width: 84rem;
+  max-width: none;
+}
+
+.prose img[alt^='Decision guide for selecting an evaluation framework'] {
+  width: 64rem;
+  max-width: none;
+}
+
+.prose img[alt^='Capability landscape for modern skill-evaluation'] {
+  width: 80rem;
+  max-width: none;
+}
+
 @media (max-width: 720px) {
   .site-header {
     min-height: 4.25rem;
@@ -858,53 +919,6 @@ main {
     min-width: 72rem;
     max-width: none !important;
     height: auto;
-  }
-
-  .prose p:has(> img[alt^='RoadRails definitions']),
-  .prose p:has(> img[alt^='WikiSkill separates']),
-  .prose p:has(> img[alt^='Architecture of a controlled skill evaluation']),
-  .prose p:has(> img[alt^='Capability landscape for modern skill-evaluation']),
-  .prose p:has(> img[alt^='Decision guide for selecting an evaluation framework']) {
-    overflow-x: auto;
-    padding: 0.45rem 0 0.7rem;
-    overscroll-behavior-inline: contain;
-    scrollbar-color: var(--accent) var(--surface-raised);
-  }
-
-  .prose p:has(> img[alt^='RoadRails definitions'])::before,
-  .prose p:has(> img[alt^='WikiSkill separates'])::before,
-  .prose p:has(> img[alt^='Architecture of a controlled skill evaluation'])::before,
-  .prose p:has(> img[alt^='Capability landscape for modern skill-evaluation'])::before,
-  .prose p:has(> img[alt^='Decision guide for selecting an evaluation framework'])::before {
-    content: 'Scroll horizontally to inspect the full figure';
-    display: block;
-    margin-bottom: 0.55rem;
-    color: var(--faint);
-    font-family: ui-monospace, "SFMono-Regular", Consolas, monospace;
-    font-size: 0.68rem;
-    letter-spacing: 0.035em;
-    text-transform: uppercase;
-  }
-
-  .prose img[alt^='RoadRails definitions'] {
-    width: 66rem;
-    max-width: none;
-  }
-
-  .prose img[alt^='WikiSkill separates'] {
-    width: 46rem;
-    max-width: none;
-  }
-
-  .prose img[alt^='Architecture of a controlled skill evaluation'],
-  .prose img[alt^='Decision guide for selecting an evaluation framework'] {
-    width: 64rem;
-    max-width: none;
-  }
-
-  .prose img[alt^='Capability landscape for modern skill-evaluation'] {
-    width: 80rem;
-    max-width: none;
   }
 
   .concept-heatmap__detail li,

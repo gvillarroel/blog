@@ -2,9 +2,9 @@
 title: "From benchmarks to skill evolution: choosing a modern agent evaluation stack"
 summary: "A practical history and capability map of open evaluation frameworks, with the experimental controls required to evolve agent skills without mistaking noise, leakage, or grader exploitation for progress."
 pubDate: 2026-08-24
-updatedDate: 2026-08-29
+updatedDate: 2026-08-30
 authors:
-  - Guillermo Villarroel
+  - Gerardo Villarroel
 tags:
   - agent-evaluation
   - skill-evolution
@@ -19,6 +19,12 @@ references:
   - title: "Architecture Tradeoff Analysis Method collection"
     url: "https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/"
     accessed: 2026-08-24
+  - title: "Agent Skills open specification"
+    url: "https://agentskills.io/specification"
+    accessed: 2026-08-30
+  - title: "Harness-Bench: Measuring Harness Effects across Models in Realistic Agent Workflows"
+    url: "https://arxiv.org/abs/2605.27922"
+    accessed: 2026-08-30
   - title: "Holistic Evaluation of Language Models"
     url: "https://arxiv.org/abs/2211.09110"
     accessed: 2026-08-24
@@ -52,6 +58,24 @@ references:
   - title: "Harbor repository"
     url: "https://github.com/harbor-framework/harbor"
     accessed: 2026-08-24
+  - title: "Evaluating Skills, Not Just Agents: Agentic Continuous Evaluation of Skills"
+    url: "https://arxiv.org/abs/2608.20614"
+    accessed: 2026-08-30
+  - title: "NVIDIA SkillEvaluator repository"
+    url: "https://github.com/NVIDIA/SkillEvaluator"
+    accessed: 2026-08-30
+  - title: "A Framework for Evaluating Agentic Skills at Scale"
+    url: "https://arxiv.org/abs/2606.17819"
+    accessed: 2026-08-30
+  - title: "AWS sample agent skill evaluation"
+    url: "https://github.com/aws-samples/sample-agent-skill-eval"
+    accessed: 2026-08-30
+  - title: "SkillTester paper"
+    url: "https://arxiv.org/abs/2603.28815"
+    accessed: 2026-08-30
+  - title: "SkillTester repository"
+    url: "https://github.com/skilltester-ai/skilltester"
+    accessed: 2026-08-30
   - title: "Inspect AI repository"
     url: "https://github.com/UKGovernmentBEIS/inspect_ai"
     accessed: 2026-08-24
@@ -94,6 +118,21 @@ references:
   - title: "Trace2Skill: Distill Trajectory-Local Lessons into Transferable Agent Skills"
     url: "https://arxiv.org/abs/2603.25158"
     accessed: 2026-08-24
+  - title: "SkillOpt: Executive Strategy for Self-Evolving Agent Skills"
+    url: "https://arxiv.org/abs/2605.23904"
+    accessed: 2026-08-30
+  - title: "Microsoft Research: SkillOpt"
+    url: "https://www.microsoft.com/en-us/research/blog/skillopt-agent-skills-as-trainable-parameters/"
+    accessed: 2026-08-30
+  - title: "Microsoft SkillOpt repository"
+    url: "https://github.com/microsoft/SkillOpt"
+    accessed: 2026-08-30
+  - title: "SkillOps paper"
+    url: "https://arxiv.org/abs/2605.13716"
+    accessed: 2026-08-30
+  - title: "SkillOps repository"
+    url: "https://github.com/Hik289/SkillOps"
+    accessed: 2026-08-30
   - title: "WikiSkill: Compiling Agent Experience into Persistent Knowledge for Skill Evolution"
     url: "https://arxiv.org/abs/2608.27454"
     accessed: 2026-08-29
@@ -150,16 +189,9 @@ The word *harness* is overloaded. A useful evaluation names four different objec
 
 ![RoadRails definitions for model, agent harness, skill, and evaluation harness](../../assets/images/modern-skill-evaluation/definition-railroads.static.svg)
 
-*The RoadRails view uses Mermaid Railroad productions to expose the composition of each
-artifact. The model implementation is an explicit alternative, and optional skill
-components appear as bypass paths rather than being hidden in prose.*
-
-In text: the **model** is the weights or fixed API plus decoding and context limits; the
-**agent harness** is the loop, tools, memory, parser, recovery, and context policy; the
-**skill** is the versioned instructions, scripts, references, and assets; and the
-**evaluation harness** is the tasks, runner, environments, graders, logs, and
-aggregation. Their questions are whether model capability, orchestration, or procedural
-knowledge changed, and whether the comparison was measured reliably.
+*The RoadRails view uses Mermaid Railroad productions to define each artifact by its
+operational components. It keeps model capability, orchestration, reusable procedure,
+and measurement policy conceptually separate.*
 
 If a run changes the model, scaffold, skill, and sandbox at once, its score may be useful
 as a product snapshot but cannot identify what caused the change. Skill evolution
@@ -171,24 +203,11 @@ changes to be modeled explicitly.
 The lineage is cumulative. New stages did not make earlier ones obsolete; they added
 controls that previous stages could not express.
 
-```mermaid
-%%{init: {"theme": "base", "themeVariables": {"fontFamily": "Arial, sans-serif", "primaryColor": "#ffffff", "primaryTextColor": "#111827", "primaryBorderColor": "#334155", "lineColor": "#334155", "secondaryColor": "#f8fafc", "tertiaryColor": "#e8f4fc", "background": "#ffffff", "clusterBkg": "#f8fafc", "clusterBorder": "#64748b", "edgeLabelBackground": "#ffffff"}, "themeCSS": ".nodeLabel, .edgeLabel, .cluster-label { font-family: Arial, sans-serif !important; }", "flowchart": {"curve": "basis", "nodeSpacing": 30, "rankSpacing": 34, "wrappingWidth": 420}}}%%
-flowchart TB
-  A["Answer evaluation: static benchmarks -> holistic profiles -> evals as code"]
-  B["Agent evaluation: interactive tasks -> trajectories -> isolated worlds"]
-  C["Evaluation-guided evolution: trace reflection -> bounded search -> holdout promotion"]
-  D["Persistent learning: immutable traces -> compounding wiki -> gated skills"]
-  E["Modern target: model + harness + skill + evaluator with explicit identities"]
+![Evolution from static benchmarks to skill evolution](../../assets/images/modern-skill-evaluation/evaluation-evolution.static.svg)
 
-  A --> B --> C --> D --> E
-
-  classDef foundation fill:#f8fafc,stroke:#475569,color:#111827,stroke-width:1.5px;
-  classDef transition fill:#e8f4fc,stroke:#005ea8,color:#0f2a3d,stroke-width:2px;
-  classDef target fill:#dcfce7,stroke:#166534,color:#052e16,stroke-width:3px,font-weight:bold;
-  class A foundation;
-  class B,C,D transition;
-  class E target;
-```
+*Each generation adds a new observable or experimental control while retaining the
+useful components of earlier systems. Icons identify what was added; the matrix makes
+what persists across generations explicit.*
 
 ### 1. From test sets to experiments
 
@@ -215,19 +234,23 @@ service from the MIT-licensed repository.
 
 ### 4. From responses to trajectories
 
-[AgentBench](https://arxiv.org/abs/2308.03688) evaluated agents across interactive
-environments. [SWE-bench](https://arxiv.org/abs/2310.06770) tied natural-language issues
-to real repositories and executable tests. The answer was no longer enough: the agent
-had to inspect state, use tools, modify artifacts, and survive a multi-step loop.
+The [AgentBench paper](https://arxiv.org/abs/2308.03688) evaluated agents across
+interactive environments. The [SWE-bench paper](https://arxiv.org/abs/2310.06770) tied
+natural-language issues to real repositories and executable tests. The answer was no
+longer enough: the agent had to inspect state, use tools, modify artifacts, and survive
+a multi-step loop.
 
 ### 5. From a shared process to an isolated world
 
-[Terminal-Bench 2.0](https://arxiv.org/abs/2601.11868) packages 89 realistic terminal
-tasks with task-specific environments, human solutions, and tests.
-[Harbor](https://www.harborframework.com/docs) generalizes that machinery into an
-agent/model evaluation and optimization framework. This matters for skills because
-instructions can change file selection, dependency installation, tool choice, and
-recovery—not merely final wording.
+The [Terminal-Bench 2.0 paper](https://arxiv.org/abs/2601.11868) packages 89 realistic
+terminal tasks with task-specific environments, human solutions, and tests. The
+[Harbor framework](https://www.harborframework.com/docs)
+([repository](https://github.com/harbor-framework/harbor)) generalizes that machinery
+into agent/model evaluation and optimization. Harbor is documented as a framework
+rather than by a canonical Harbor-framework paper; similarly named HARBOR papers
+describe different systems. This matters for skills because instructions can change
+file selection, dependency installation, tool choice, and recovery—not merely final
+wording.
 
 The environment is part of the treatment boundary. Anthropic measured a
 six-percentage-point spread between its least- and most-resourced Terminal-Bench 2.0
@@ -247,7 +270,19 @@ from pools of trajectories into transferable skill directories. These optimizers
 not substitutes for evaluation runners. They increase the need for hidden holdouts,
 strong graders, and lineage because an optimizer will exploit whatever signal it sees.
 
-### 7. From discarded trials to persistent knowledge
+### 7. From total agent score to incremental Skill Lift
+
+The [ACES paper](https://arxiv.org/abs/2608.20614) and its open-source
+[NVIDIA SkillEvaluator](https://github.com/NVIDIA/SkillEvaluator) implementation make
+the skill itself the first-class evaluation target. Deterministic structure and safety
+checks are followed by paired live trials with and without the skill under the same
+task, model, harness, workspace, and scorer. The resulting **Skill Lift** estimates the
+skill's contribution rather than reporting only total agent capability.
+
+This is the decisive attribution control for skill evaluation. A strong agent score
+does not show that the skill helped; the no-skill/with-skill contrast does.
+
+### 8. From discarded trials to persistent knowledge
 
 [WikiSkill](https://arxiv.org/abs/2608.27454), a Google Research and Virginia Tech
 preprint submitted on August 27, 2026, adds a durable learning layer between execution
@@ -259,9 +294,9 @@ Validation can roll a skill back, but it does not roll the wiki back.
 
 ![WikiSkill separates immutable evidence, persistent knowledge, and executable skills](../../assets/images/modern-skill-evaluation/wikiskill-loop.static.svg)
 
-*WikiSkill makes accumulated knowledge a separately governed artifact. During training,
-the inference agent receives active skills but cannot read the wiki; the optimizer can
-learn from both accepted and rejected proposals.*
+*Original reconstruction of WikiSkill Figure 2. Immutable traces feed a persistent
+wiki; the proposer turns accumulated knowledge into gated skills; and the inference
+agent receives active skills but never the wiki itself.*
 
 The separation is empirically consequential within the paper's protocol. In a
 four-benchmark Gemini-3.5-Flash ablation, giving the Skill Proposer wiki access while
@@ -275,14 +310,15 @@ WikiSkill is currently a research design, not a drop-in open-source evaluation
 framework. The study directly injects active skills, so it does not evaluate skill
 retrieval or triggering; validation accepts only immediately improving proposals; the
 wiki has no automated pruning mechanism; and the arXiv record does not link a public
-implementation or code license as of this update.
+implementation or code license as of August 30, 2026.
 
 ## The ten pillars of a modern skill evaluation
 
-![Architecture of a controlled skill evaluation](../../assets/images/modern-skill-evaluation/evaluation-system.static.svg)
+![Horizontal C4 architecture of a controlled skill evaluation](../../assets/images/modern-skill-evaluation/evaluation-system-c4.svg)
 
-*One declared treatment enters a frozen comparison boundary. Execution evidence is
-scored, paired, and gated before an independent promotion decision.*
+*Horizontal C4 container view. A study owner freezes the experiment; the orchestrator
+runs paired baseline and candidate trials in an isolated task world; evidence and
+scoring remain separate from the independent promotion authority.*
 
 A framework is only as trustworthy as the protocol built on it. For skill evolution,
 the minimum credible design has ten pillars.
@@ -358,84 +394,103 @@ flowchart TB
 
 ## Capability comparison: what the frameworks actually evaluate
 
-No row below means “best overall.” It describes the framework's native center of
-gravity as of August 29, 2026. *Adapter* means the behavior is possible, but the user
-must define the skill boundary or glue code.
+No row means “best overall.” The map describes each framework's native center of gravity
+as of August 30, 2026. *Adapter* means the behavior is possible, but the user must define
+the skill boundary or glue code.
 
 ![Capability landscape for modern skill-evaluation frameworks](../../assets/images/modern-skill-evaluation/capability-landscape.svg)
 
 *D3-generated ordinal capability map. `N` means native or first-class, `S` means strong
 documented support, `A` means an adapter or manual convention, and `-` means outside the
-framework's center of gravity. Read by column; row totals are intentionally meaningless.*
+framework's center of gravity. Dedicated evaluators are separated from runners,
+libraries, evolution methods, and lifecycle platforms. Row totals are intentionally
+meaningless.*
 
-| Framework | Skill as treatment | Isolated, stateful world | Behavioral evidence | Scoring center | Built-in evolution |
-| --- | --- | --- | --- | --- | --- |
-| [Harbor](https://github.com/harbor-framework/harbor) | **Native:** local/Git `SKILL.md` directory, content digest, resolved commit | **Native:** Docker and cloud sandboxes | Trajectory, artifacts, verifier logs, time, tokens, cost | Executable tests, multi-reward verifiers, programmatic or model judges | GEPA and RL/SFT integrations; promotion governance is external |
-| [Inspect AI](https://inspect.aisi.org.uk/) | Adapter through task, solver, package, or mounted files | **Native:** Docker, Kubernetes, Modal, Proxmox, Vagrant extensions | Transcripts, tools, limits, logs; logs can be rescored | Python scorers, model graders, human intervention | External optimizer |
-| [Promptfoo](https://github.com/promptfoo/promptfoo) | Provider-specific skill or prompt configuration | Provider runtime; not a general task-world abstraction | Outputs, assertions, cost/latency; traces for supported agents | Declarative assertions, custom code, model graders, red teaming | Matrix search and external optimization |
-| [OpenAI Evals](https://github.com/openai/evals) | Adapter; usually prompt/model configuration | No general agent sandbox | Primarily samples and outputs | Exact, custom, and model-graded evals | None in the runner |
-| [DeepEval](https://github.com/confident-ai/deepeval) | Adapter in Python test fixtures | No general environment isolation | Agent trajectories, steps, tool and sub-agent behavior | Pytest-style metrics, custom/DAG and model judges | Prompt optimization, not generic skill population search |
-| [Ragas](https://github.com/vibrantlabsai/ragas) | Adapter | No general environment isolation | RAG responses, messages, retrieved context, tools | Retrieval/generation quality and agent/tool metrics | Experiments and test generation; optimizer external |
-| [Pydantic Evals](https://ai.pydantic.dev/evals/) | Adapter as typed input/configuration | Function runtime, not a task sandbox | Typed outputs and OpenTelemetry spans | Typed Python evaluators and span assertions | External optimizer |
-| [MLflow](https://github.com/mlflow/mlflow) | Manual artifact/version convention | No task sandbox | Versioned datasets, traces, experiments, production feedback | Code, model, and human scorers | Experiment comparison; optimizer external |
-| [Langfuse](https://github.com/langfuse/langfuse) | Manual metadata/version convention | No task sandbox | OpenTelemetry-style traces, datasets, online feedback | Code, model, human, and user scores | Experiment comparison; optimizer external |
-| [Phoenix](https://github.com/Arize-ai/phoenix) | Manual metadata/version convention | No task sandbox | OpenInference/OpenTelemetry spans and datasets | Code, model, and human evaluation | Experiment comparison; optimizer external |
-| [LangSmith](https://docs.langchain.com/langsmith/evaluation) | Manual dataset/metadata convention | Hosted integrations, not a portable task format | Full trajectories, datasets, online traces | Code, model, human, and pairwise evaluators | Dataset experiments; optimizer external |
+### Dedicated skill evaluators
 
-Three conclusions follow.
-
-First, **Harbor is the most direct open-source fit for evaluating complete skill
-directories against stateful tasks**. Its skill lock records the source, SHA-256 content
-digest, Git URL, and resolved commit. That is a provenance feature, not proof that the
-experimental split or promotion policy is sound.
-
-Second, **Inspect is the strongest general alternative when the evaluation itself needs
-custom research logic, solver composition, rescoring, strict limits, or varied sandbox
-backends**. It can evaluate a skill, but the skill is an experiment convention rather
-than its first-class unit.
-
-Third, **observability platforms answer a different question**. MLflow, Langfuse,
-Phoenix, and LangSmith excel at datasets, traces, feedback, experiments, and production
-monitoring. They complement a task runner; they do not automatically provide clean
-terminal worlds, skill-directory locks, or holdout governance.
-
-### Evolution methods are not evaluation frameworks
-
-| Method | Distinctive evolution state | Evaluation it still requires | Adoption posture |
+| Framework | Native capabilities | Best reason to choose it | Critical caveat |
 | --- | --- | --- | --- |
-| [GEPA](https://arxiv.org/abs/2507.19457) | Reflective textual proposals plus a Pareto frontier | A task runner, case-level feedback, disjoint validation, and a sealed holdout | Available through open DSPy tooling; integrate it with the task world that matches the skill |
-| [Trace2Skill](https://arxiv.org/abs/2603.25158) | Trajectory-local lessons consolidated into transferable skill directories | Independent execution and promotion evidence beyond the traces used to distill | Research method; verify the implementation and license selected for use |
-| [WikiSkill](https://arxiv.org/abs/2608.27454) | Immutable raw traces, a persistent wiki, proposal impact history, and gated skills | Real task worlds, calibrated graders, holdout governance, and skill-retrieval evaluation | Public preprint; no implementation or code license is linked from the arXiv record as of 2026-08-29 |
+| [NVIDIA SkillEvaluator](https://github.com/NVIDIA/SkillEvaluator) | Deterministic structure, safety, PII and script checks; similarity/deduplication; paired live trials through Harbor | First-class skill directories, no-skill/with-skill Skill Lift, triggering, behavior, and cost evidence | Young project; live trials still need a provider, agent runtime, sandbox, task workspace, and reviewed task generation |
+| [AWS sample skill-eval](https://github.com/aws-samples/sample-agent-skill-eval) | Lightweight safety, quality, reliability, and cost checks | Permissive, small CI starter | Reference sample, not a general task runner or mature benchmark ecosystem |
+| [SkillTester](https://github.com/skilltester-ai/skilltester) | Paired utility and security probes | Native baseline-versus-skill and adversarial testing | Repository has no detected license; source visibility does not grant reuse rights |
+
+The independent [framework-at-scale study](https://arxiv.org/abs/2606.17819) evaluated
+500 skills, 1,000 generated tasks, and 19 agent-model configurations. Its central
+operational lesson is that gains vary by runtime: a skill's quality is conditional on
+the model and harness that execute it.
+
+### Task runners and evaluation libraries
+
+| Framework | Best fit | Evidence and scoring | Skill-specific limitation |
+| --- | --- | --- | --- |
+| [Harbor](https://github.com/harbor-framework/harbor) | Containerized terminal, repository, browser, data, and artifact tasks | Complete trajectories, artifacts, executable verifiers, model judges, time, tokens, and cost | Strong skill identity and execution substrate; paired protocol and promotion governance remain study responsibilities |
+| [Inspect AI](https://inspect.aisi.org.uk/) | Custom Python evaluation programs, safety studies, and varied sandbox backends | Solvers, scorers, limits, logs, rescoring, and human intervention | Skill bundle is an adapter or experiment convention, not the native unit |
+| [Promptfoo](https://github.com/promptfoo/promptfoo) | Provider matrices, CI assertions, and red teaming | Declarative assertions, custom code, judges, latency, and cost | Provider runtime is not a general isolated task world |
+| [OpenAI Evals](https://github.com/openai/evals) | Response datasets and custom graders | Exact, custom, and model-graded checks | No general skill bundle or agent sandbox in the OSS runner |
+| [DeepEval](https://github.com/confident-ai/deepeval) | Python and pytest workflows, including agent paths | Task, tool, sub-agent, custom DAG, and model-judge metrics | Prompt optimization is not generic search over complete skill directories |
+| [Ragas](https://github.com/vibrantlabsai/ragas) | RAG and retrieval-centered systems | Retrieval/generation quality, messages, context, and tool metrics | Pair with a runner when the agent changes external state |
+| [Pydantic Evals](https://ai.pydantic.dev/evals/) | Typed Python applications | Typed evaluators and OpenTelemetry span assertions | Function runtime is not an isolated task-world abstraction |
+
+**Choice rule:** use NVIDIA SkillEvaluator for a ready-made skill gate; Harbor when the
+task world or evaluator must be bespoke; and Inspect AI when evaluation-program
+flexibility, safety controls, rescoring, or sandbox diversity matters most.
+
+### Lifecycle platforms
+
+| Framework | What it adds | What it does not replace |
+| --- | --- | --- |
+| [MLflow](https://github.com/mlflow/mlflow) | Runs, datasets, artifacts, traces, scorers, registry, and production feedback | A clean terminal or browser task world |
+| [Langfuse](https://github.com/langfuse/langfuse) | Self-hosted or managed traces, datasets, experiments, scores, and user feedback | Skill locking and holdout governance |
+| [Phoenix](https://github.com/Arize-ai/phoenix) | OpenInference/OpenTelemetry spans, datasets, and evaluation | OSI-open licensing and isolated execution |
+| [LangSmith](https://docs.langchain.com/langsmith/evaluation) | Managed datasets, trajectories, pairwise evaluation, online traces, and feedback | An open-source, portable task runner |
+
+These systems preserve lifecycle evidence; they do not by themselves prove that a
+candidate skill caused a result.
+
+### Evolution and library operations are not evaluation frameworks
+
+| Method | Distinctive state | Evaluation still required | Adoption posture |
+| --- | --- | --- | --- |
+| [Microsoft SkillOpt](https://github.com/microsoft/SkillOpt) | Bounded add/delete/replace edits, rejected-edit memory, validation gates, and slow meta-updates | Real task execution, independent splits, calibrated scoring, and an untouched promotion holdout | MIT implementation and [paper](https://arxiv.org/abs/2605.23904) from Microsoft Research |
+| [SkillOps](https://github.com/Hik289/SkillOps) | Typed skill contracts plus graph health, merge, repair, retirement, validators, and adapters | Utility, triggering, behavior, safety, and generalization evidence | Separate MIT project from Emory/UIUC; [paper](https://arxiv.org/abs/2605.13716) |
+| [GEPA](https://arxiv.org/abs/2507.19457) | Reflective proposals plus a Pareto frontier | Task runner, case feedback, disjoint validation, and sealed holdout | Available through open DSPy tooling |
+| [Trace2Skill](https://arxiv.org/abs/2603.25158) | Trajectory-local lessons consolidated into transferable skills | Independent evidence beyond the traces used to distill | Research method; verify the selected implementation and license |
+| [WikiSkill](https://arxiv.org/abs/2608.27454) | Immutable traces, persistent wiki, proposal impact history, and gated skills | Real task worlds, calibrated graders, holdout governance, and retrieval evaluation | Public preprint; no public implementation or code license linked as of August 30, 2026 |
+
+**Naming clarification:** **SkillOpt is Microsoft's optimizer. SkillOps is the separate
+Emory/UIUC skill-library project.** Microsoft's ACES cyber repository is also distinct
+from the ACES skill-evaluation method implemented by NVIDIA SkillEvaluator.
 
 The optimizer proposes or selects treatments; it does not prove that they generalize.
-WikiSkill can sit above Harbor or Inspect AI, with MLflow or Langfuse preserving
-lifecycle evidence, but the evaluator and promotion authority must remain independently
-specified.
+Keep the evaluator and promotion authority independently specified.
 
 ## License, deployment, and community
 
-GitHub stars are a coarse adoption signal—not a measure of evaluation validity. The
-snapshot below was taken from the GitHub API on August 29, 2026. Pydantic's number
-covers the whole `pydantic-ai` repository.
+GitHub stars and forks are coarse adoption signals—not measures of evaluation validity.
+This snapshot is from the GitHub API on August 30, 2026.
 
-| Framework | License posture | Approx. GitHub stars | Operational fit |
-| --- | --- | ---: | --- |
-| Harbor | Apache-2.0 | 4,765 | Local or cloud container trials; agent and skill optimization |
-| Inspect AI | MIT | 2,661 | Python research/evaluation runtime with several sandbox backends |
-| Promptfoo | MIT | 24,664 | JS/TS CLI, YAML, CI, provider matrices, security testing |
-| OpenAI Evals repository | MIT code; individual datasets retain their own terms | 19,307 | Local OSS model/output evaluation; hosted API is proprietary |
-| DeepEval | Apache-2.0 | 17,953 | Python/pytest evaluation and agent metrics |
-| Ragas | Apache-2.0 | 15,541 | RAG and retrieval-centered evaluation |
-| Pydantic Evals | MIT | 19,578 repo-wide | Typed Python applications and Pydantic AI |
-| MLflow | Apache-2.0 | 27,728 | Broad experiment, trace, registry, and production lifecycle |
-| Langfuse | MIT core; enterprise directories excluded | 33,908 | Self-hosted or managed observability and evaluation |
-| Phoenix | Elastic License 2.0 | 11,243 | Free self-hosting with source available; **[not OSI open source](https://opensource.org/osd)** |
-| LangSmith | Proprietary | Not comparable | Managed LangChain-centered evaluation and observability |
+| Framework | License posture | Stars | Forks | Operational fit |
+| --- | --- | ---: | ---: | --- |
+| NVIDIA SkillEvaluator | Apache-2.0 | 354 | 34 | Open, dedicated skill-evaluation implementation |
+| AWS sample skill-eval | MIT-0 | 14 | 3 | Small reference implementation |
+| SkillTester | No detected license | 36 | 2 | Source-visible; permission required for reuse |
+| Harbor | Apache-2.0 | 4,774 | 1,683 | Local or cloud task execution and optimization substrate |
+| Inspect AI | MIT | 2,663 | 682 | Open Python research/evaluation runtime |
+| Promptfoo | MIT | 24,672 | 2,250 | Large JS/TS, CI, and security community |
+| OpenAI Evals repository | MIT code; dataset terms vary | 19,307 | 3,069 | OSS runner distinct from hosted services |
+| DeepEval | Apache-2.0 | 17,962 | 1,875 | Python/pytest and agent metrics |
+| Ragas | Apache-2.0 | 15,544 | 1,662 | RAG and retrieval-centered ecosystem |
+| Pydantic AI repository | MIT | 19,583 | 2,616 | Repo-wide count includes Pydantic Evals |
+| Microsoft SkillOpt | MIT | 16,484 | 1,549 | Large early skill-optimization community |
+| SkillOps | MIT | 62 | 6 | Early typed skill-library project |
+| MLflow | Apache-2.0 | 27,735 | 6,234 | Broad experiment and lifecycle platform |
+| Langfuse | MIT core; enterprise terms differ | 33,923 | 3,666 | Self-hosted or managed observability |
+| Phoenix | Elastic License 2.0 | 11,247 | 1,084 | Source available, **[not OSI open source](https://opensource.org/osd)** |
+| LangSmith | Proprietary | Not comparable | Not comparable | Managed LangChain-centered platform |
 
 “Public on GitHub” is not a license. GitHub's own guidance states that, without a
 license, default copyright applies and others do not receive permission to reproduce,
-distribute, or create derivative works. That distinction matters in the local case
-study below.
+distribute, or create derivative works.
 
 ## What fits which software
 
@@ -447,8 +502,12 @@ Choose from the shape of the work, then add any missing layer.
 evolving skill requires response, trajectory, and changed-world evidence.*
 
 - **Terminal, coding, data transformation, or artifact-producing agents:** start with
-  Harbor. Use executable task verifiers and pin CPU, RAM, time, network, images, agent,
-  model, and skill digests.
+  NVIDIA SkillEvaluator over Harbor when the paired skill protocol fits. Use Harbor
+  directly for a bespoke evaluator. Pin CPU, RAM, time, network, images, agent, model,
+  and skill digests.
+- **Authoring-time or CI quality gate for a skill directory:** use NVIDIA SkillEvaluator
+  for the fuller three-tier workflow; use the AWS sample when a compact starter is more
+  appropriate.
 - **Safety research, custom agent loops, multi-agent studies, or heterogeneous
   sandboxes:** start with Inspect AI. Define a clear skill adapter and persist its
   content digest.
@@ -464,13 +523,15 @@ evolving skill requires response, trajectory, and changed-world evidence.*
   open-source core. Evaluate Phoenix's ELv2 terms against the deployment model. Choose
   LangSmith when managed service convenience and LangChain integration outweigh
   portability and license constraints.
-- **Automatic prompt, harness, or skill evolution:** pair a runner with GEPA, DSPy, or
-  a purpose-built mutator. The optimizer proposes; a disjoint evaluator and promotion
-  gate decide.
+- **Automatic prompt, harness, or skill evolution:** pair a runner with SkillOpt, GEPA,
+  DSPy, or a purpose-built mutator. SkillOps is useful for library operations, not as
+  proof of runtime improvement. The optimizer proposes; a disjoint evaluator and
+  promotion gate decide.
 
-In practice, a mature stack is often **Harbor or Inspect for offline task execution +
-Langfuse or MLflow for lifecycle evidence + a controlled optimizer for candidate
-generation**. One product rarely dominates all three layers.
+In practice, a mature stack is often **NVIDIA SkillEvaluator for the skill-native gate +
+Harbor or Inspect for offline execution + Langfuse or MLflow for lifecycle evidence + a
+controlled optimizer for candidate generation**. One product rarely dominates every
+layer.
 
 ## The local evolution: Skill Arena, Harbor, and Knowledge
 
@@ -506,53 +567,9 @@ The lesson is not “never optimize.” It is that a cheaper or higher-mean cand
 not an improvement when it crosses a predeclared quality boundary. Development selects
 what deserves scrutiny; holdout decides what may be promoted.
 
-There is also a legal distinction: both local repositories are public, but neither
-currently has a detected license file. They are therefore **source-visible, not
-open-source dependencies with granted reuse rights**. Their methods can inform this
-analysis; adopting or redistributing their code requires the owners to add a license or
-grant permission.
-
-## A minimal, auditable study contract
-
-The precise syntax is less important than freezing the contract before results exist.
-
-```yaml
-objective: improve-the-skill-without-quality-regression
-treatment:
-  kind: skill-directory
-  baseline_digest: sha256:...
-frozen:
-  - model-and-decoding
-  - agent-harness-commit
-  - task-and-environment-digests
-  - verifier-and-rubric-digests
-  - cpu-ram-time-network-policy
-splits:
-  discovery: visible
-  development: visible-to-optimizer
-  validation: one-way-release
-  holdout: sealed-until-finalist
-metrics:
-  gates: [task-correctness, safety, semantic-quality]
-  objectives: [success-rate, latency, tokens, cost]
-retries:
-  semantic_failure: 0
-  verified_external_failure: bounded-and-lineage-preserving
-report:
-  - paired-case-results
-  - worst-domain-result
-  - uncertainty
-  - trajectories-and-artifacts
-  - failure-taxonomy
-  - candidate-lineage
-promotion:
-  rule: all-gates-pass-and-no-critical-cell-regresses
-  authority: independent-reviewer
-```
-
-This contract prevents three common mistakes: optimizing against the test set, counting
-retries as independent successes, and allowing a blended score to conceal a critical
-regression.
+Both supporting repositories and the reports cited above are public. No private
+knowledge-corpus text, retrieval output, or unpublished evaluation artifact is copied
+into this article.
 
 ## The selection rule
 
@@ -562,16 +579,16 @@ If it is a **trace**, choose an agent-aware scorer and observability layer. If i
 all three—and add immutable skill provenance, disjoint splits, and independent
 promotion.
 
-For the specific goal of open, reproducible skill evolution, the strongest default is
-currently:
+For open, reproducible skill evolution, the strongest ready-made default is currently:
 
-1. **Harbor** as the execution and artifact substrate;
-2. **deterministic task tests plus calibrated semantic review** as the scoring layer;
-3. **Skill Arena-style append-only study governance** as a methodology, after resolving
-   its license if code will be reused;
-4. **GEPA, trace distillation, Pareto search, or another bounded optimizer** only for
-   proposing candidates; and
-5. **MLflow or Langfuse** when long-lived experiment and production trace management is
+1. **NVIDIA SkillEvaluator** as the skill-native quality gate;
+2. **Harbor** as the isolated paired-execution and artifact substrate;
+3. **deterministic task tests plus calibrated semantic review** as the scoring layer;
+4. **SkillOpt, GEPA, trace distillation, Pareto search, or another bounded optimizer**
+   only for proposing candidates;
+5. **disjoint development, validation, and sealed holdout evidence** plus an independent
+   promotion authority; and
+6. **MLflow or Langfuse** when long-lived experiment and production trace management is
    needed.
 
 Inspect AI is the best open alternative when evaluation-program flexibility matters

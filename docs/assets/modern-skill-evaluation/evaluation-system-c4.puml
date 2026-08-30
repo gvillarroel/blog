@@ -1,0 +1,52 @@
+@startuml
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_LANDSCAPE()
+SHOW_LEGEND()
+
+title Controlled skill evaluation — one treatment, independent evidence
+
+Person(reviewer, "Promotion authority", "Reviews evidence; cannot mutate candidates")
+
+System_Ext(optimizer, "Candidate builder", "Human or bounded optimizer")
+System_Ext(registry, "Frozen identities", "Model · harness · task · image · graders · resources")
+System_Ext(world, "Isolated task world", "Repository · terminal · browser · simulator · data")
+
+Container(treatment, "Treatment registry", "Digest-sealed bundle", "Binds baseline and candidate contents")
+Container(runner, "Paired trial runner", "Harbor / Inspect / agent CLI", "Runs the same task with and without the skill")
+Container(evidence, "Evidence ledger", "ATIF / traces / artifacts", "Preserves outcome, process, resources, and cost")
+Container(grading, "Layered grading", "Tests + calibrated judges", "Scores correctness, behavior, safety, and efficiency")
+Container(decision, "Promotion gate", "Paired statistics + policy", "Requires hard gates and no critical regression")
+
+Lay_R(treatment, runner)
+Lay_R(runner, evidence)
+Lay_R(evidence, grading)
+Lay_R(grading, decision)
+Lay_U(optimizer, treatment)
+Lay_U(registry, treatment)
+Lay_D(world, runner)
+Lay_U(reviewer, decision)
+
+Rel_R(optimizer, treatment, "Proposes versioned candidate", "SKILL.md bundle")
+Rel_D(registry, treatment, "Pins comparison boundary", "digests + commits")
+Rel_R(treatment, runner, "Supplies baseline and candidate")
+Rel_D(world, runner, "Provides identical task state")
+Rel_R(runner, evidence, "Emits complete trial record")
+Rel_R(evidence, grading, "Supplies outcome and process evidence")
+Rel_R(grading, decision, "Supplies paired scores and diagnostics")
+Rel_U(reviewer, decision, "Approves promotion or retains baseline")
+note bottom of decision
+  Return accepted and rejected evidence
+  to the candidate builder.
+end note
+
+UpdateElementStyle(treatment, $bgColor="#E8F4FC", $fontColor="#0F2742", $borderColor="#005EA8")
+UpdateElementStyle(runner, $bgColor="#E8F4FC", $fontColor="#0F2742", $borderColor="#005EA8")
+UpdateElementStyle(evidence, $bgColor="#F8FAFC", $fontColor="#111827", $borderColor="#475569")
+UpdateElementStyle(grading, $bgColor="#FFF4CC", $fontColor="#431407", $borderColor="#9A5B00")
+UpdateElementStyle(decision, $bgColor="#DCFCE7", $fontColor="#052E16", $borderColor="#166534")
+UpdateElementStyle(optimizer, $bgColor="#F8FAFC", $fontColor="#111827", $borderColor="#475569")
+UpdateElementStyle(registry, $bgColor="#F8FAFC", $fontColor="#111827", $borderColor="#475569")
+UpdateElementStyle(world, $bgColor="#F8FAFC", $fontColor="#111827", $borderColor="#475569")
+
+@enduml

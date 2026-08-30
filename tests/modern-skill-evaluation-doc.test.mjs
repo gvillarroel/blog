@@ -19,9 +19,11 @@ const mermaidTargets = [...doc.matchAll(/\[Mermaid source\]\(([^)]+)\)/g)].map(
 
 test('final guide includes the complete authored and generated visual package', () => {
   assert.equal(figureTargets.length, 8);
-  assert.equal(animatedTargets.length, 6);
-  assert.equal(mermaidTargets.length, 6);
+  assert.equal(animatedTargets.length, 4);
+  assert.equal(mermaidTargets.length, 4);
   assert.match(doc, /\[D3 authoring source\]\(assets\/modern-skill-evaluation\/capability-landscape\.html\)/);
+  assert.match(doc, /\[D3 authoring source\]\(assets\/modern-skill-evaluation\/evaluation-evolution\.html\)/);
+  assert.match(doc, /\[PlantUML C4 source\]\(assets\/modern-skill-evaluation\/evaluation-system-c4\.puml\)/);
 
   const targets = [
     ...figureTargets,
@@ -29,6 +31,8 @@ test('final guide includes the complete authored and generated visual package', 
     ...mermaidTargets,
     'assets/modern-skill-evaluation/capability-landscape.html',
     'assets/modern-skill-evaluation/capability-landscape.png',
+    'assets/modern-skill-evaluation/evaluation-evolution.html',
+    'assets/modern-skill-evaluation/evaluation-system-c4.puml',
   ];
 
   for (const target of targets) {
@@ -53,7 +57,9 @@ test('generated SVGs retain dimensions, content, and accessible descriptions', (
 
   const d3Svg = readFileSync(new URL('capability-landscape.svg', assetRoot), 'utf8');
   assert.match(d3Svg, /Skill identity/);
-  assert.match(d3Svg, /Built-in search/);
+  assert.match(d3Svg, /Paired skill lift/);
+  assert.match(d3Svg, /Search \+ evolution/);
+  assert.match(d3Svg, /NVIDIA SkillEvaluator/);
   assert.match(d3Svg, /not a benchmark/i);
 
   const railsSource = readFileSync(new URL('definition-railroads.mmd', assetRoot), 'utf8');
@@ -62,7 +68,8 @@ test('generated SVGs retain dimensions, content, and accessible descriptions', (
   assert.match(railsSource, /model =/);
   assert.match(railsSource, /agent_harness =/);
   assert.match(railsSource, /skill =/);
-  assert.match(railsSource, /evaluation_harness =/);
+  assert.match(railsSource, /evaluation =/);
+  assert.doesNotMatch(railsSource, /model weights|fixed model API/i);
   assert.match(railsSvg, /class="railroad-diagram"/);
   assert.match(railsSvg, /background-color: white/);
   assert.match(railsSvg, /aria-describedby="chart-desc-my-svg"/);
@@ -83,7 +90,6 @@ test('visuals use embedded light backgrounds and high-contrast authored palettes
 
   for (const name of [
     'evaluation-evolution.static.svg',
-    'evaluation-system.static.svg',
     'promotion-loop.static.svg',
     'selection-guide.static.svg',
     'wikiskill-loop.static.svg',
@@ -91,6 +97,12 @@ test('visuals use embedded light backgrounds and high-contrast authored palettes
     const source = readFileSync(new URL(name, assetRoot), 'utf8');
     assert.match(source, /data-diagram-background="light"/);
   }
+
+  const c4Svg = readFileSync(new URL('evaluation-system-c4.svg', assetRoot), 'utf8');
+  assert.match(c4Svg, /<svg\b/);
+  assert.match(c4Svg, /viewBox="0 0 1799 830"/);
+  assert.match(c4Svg, /#FFFFFF|#ffffff/);
+  assert.match(c4Svg, /Promotion.*authority/s);
 
   const railroadSvg = readFileSync(new URL('definition-railroads.static.svg', assetRoot), 'utf8');
   assert.match(railroadSvg, /background-color: white/);
@@ -101,6 +113,9 @@ test('visuals use embedded light backgrounds and high-contrast authored palettes
 test('comparison covers the intended open and proprietary framework set', () => {
   for (const framework of [
     'Harbor',
+    'NVIDIA SkillEvaluator',
+    'AWS sample skill-eval',
+    'SkillTester',
     'Inspect AI',
     'Promptfoo',
     'OpenAI Evals',
@@ -111,32 +126,36 @@ test('comparison covers the intended open and proprietary framework set', () => 
     'Langfuse',
     'Phoenix',
     'LangSmith',
+    'Microsoft SkillOpt',
+    'SkillOps',
   ]) {
     assert.ok(doc.includes(framework), `Missing framework: ${framework}`);
   }
 
-  assert.match(doc, /Public on GitHub[^\n]+not a license/);
-  assert.match(doc, /source available, but not OSI open source/i);
+  assert.match(doc, /Public on GitHub[^\n]+not a license/i);
+  assert.match(doc, /source available, not OSI open source/i);
   assert.match(doc, /LangSmith \| Proprietary/);
+  assert.match(doc, /SkillOpt[^\n]+Microsoft/);
+  assert.match(doc, /SkillOps[^\n]+Emory\/UIUC/);
 });
 
-test('modern evaluation pillars and auditable promotion controls remain complete', () => {
+test('modern evaluation pillars and auditable promotion controls remain complete without the removed contract chapter', () => {
   const pillars = [...doc.matchAll(/^\d+\. \*\*[^*]+\.\*\*/gm)];
   assert.equal(pillars.length, 10);
 
   for (const required of [
-    'baseline_digest',
-    'task-and-environment-digests',
-    'validation: one-way-release',
-    'holdout: sealed-until-finalist',
-    'semantic_failure: 0',
-    'verified_external_failure: bounded-and-lineage-preserving',
-    'persistent_knowledge: separately-versioned',
-    'rejected_proposals: retained',
-    'authority: independent-reviewer',
+    'complete skill bundle',
+    'discovery, development, validation, and holdout',
+    'sealed holdout',
+    'semantic failure',
+    'provider, infrastructure',
+    'Raw traces, accumulated knowledge, and the executable skill',
+    'independent promotion',
+    'paired no-skill/with-skill condition',
   ]) {
     assert.ok(doc.includes(required), `Missing study control: ${required}`);
   }
+  assert.doesNotMatch(doc, /Minimal auditable study contract|```yaml/);
 });
 
 test('WikiSkill is integrated as a persistent-learning method without overstating adoptability', () => {

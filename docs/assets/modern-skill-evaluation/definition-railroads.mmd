@@ -34,8 +34,8 @@ mermaid:
 ---
 railroad-ebnf-beta
 accTitle: Four artifact definitions for controlled skill evaluation
-accDescr: Four railroad productions define the model as its implementation, decoding policy, and context limits; the agent harness as its loop, tools, memory, parser, recovery, and context policy; the skill as SKILL.md plus instructions and optional scripts, references, and assets; and the evaluation harness as tasks, runner, environments, graders, logs, and aggregation.
-model = ( "model weights" | "fixed model API" ), "decoding policy", "context limits" ;
-agent_harness = "control loop", "tools", "memory", "parser", "recovery policy", "context policy" ;
-skill = "SKILL.md", "instructions", [ "scripts" ], [ "references" ], [ "assets" ] ;
-evaluation_harness = "tasks", "runner", "environments", "graders", "logs", "aggregation" ;
+accDescr: Four railroad productions define a model as a parameterized predictor with a decoding configuration and context limit; an agent harness as the executable control plane over context, tools, state, permissions, loop, verification, and recovery; a skill as a reusable capability artifact with representation, trigger, procedure, optional tools, version, provenance, and lifecycle; and evaluation as a protocol over a versioned configuration, repetitions, oracle, budget, and evidence.
+model = "parameterized predictor", "decoding configuration", "context limit" ;
+agent_harness = "context", "tools", "state", "permissions", "loop", "verification", "recovery" ;
+skill = "representation", "trigger", "procedure", [ "tools" ], "version", "provenance", "lifecycle" ;
+evaluation = "versioned configuration", "repetitions", "oracle", "budget", "evidence" ;

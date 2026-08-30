@@ -36,12 +36,42 @@ def find_chrome() -> Path:
 def build_html(source: Path) -> str:
     source_text = source.read_text(encoding="utf-8")
 
-    # Chrome prints the Mermaid Railroad SVG directly. The dense D3 capability map uses
-    # its PNG snapshot for deterministic typography and a compact PDF while retaining
-    # the HTML/SVG sources in the companion bundle.
+    # Chrome prints the Mermaid, D3 timeline, and PlantUML C4 SVGs directly. The dense
+    # D3 capability map uses its PNG snapshot for deterministic typography and a compact
+    # PDF while retaining the HTML/SVG sources in the companion bundle.
     source_text = source_text.replace(
         "assets/modern-skill-evaluation/capability-landscape.svg",
         "assets/modern-skill-evaluation/capability-landscape.png",
+    )
+
+    # The web version keeps the complete horizontal C4 canvas in a scrollable
+    # frame. Its labels become too small when that 1799 px canvas is fitted to
+    # portrait A4, so the PDF substitutes two overlapping magnified halves.
+    c4_markdown = (
+        "![Horizontal C4 architecture of a controlled skill evaluation]"
+        "(assets/modern-skill-evaluation/evaluation-system-c4.svg)"
+    )
+    c4_print_details = r"""
+<div class="pdf-c4-details" aria-label="Magnified C4 architecture details">
+  <figure class="pdf-c4-detail pdf-c4-detail-left">
+    <div class="pdf-c4-crop">
+      <img src="assets/modern-skill-evaluation/evaluation-system-c4.svg"
+           alt="C4 detail showing frozen identities, the candidate builder, treatment registry, isolated task world, and paired trial runner" />
+    </div>
+    <figcaption><strong>Figure 4a.</strong> Controlled treatment and paired execution.</figcaption>
+  </figure>
+  <figure class="pdf-c4-detail pdf-c4-detail-right">
+    <div class="pdf-c4-crop">
+      <img src="assets/modern-skill-evaluation/evaluation-system-c4.svg"
+           alt="C4 detail showing the evidence ledger, layered grading, promotion gate, and independent promotion authority" />
+    </div>
+    <figcaption><strong>Figure 4b.</strong> Evidence, grading, and independent promotion.</figcaption>
+  </figure>
+</div>
+"""
+    source_text = source_text.replace(
+        c4_markdown,
+        c4_print_details,
     )
 
     body = markdown.markdown(
@@ -143,7 +173,61 @@ def build_html(source: Path) -> str:
 
       img[src$="skill-evaluation-hero.png"] { max-height: 112mm; }
       img[src$="definition-railroads.static.svg"] { max-height: 105mm; }
+      img[src$="evaluation-evolution.static.svg"] { max-height: 148mm; }
+      img[src$="wikiskill-loop.static.svg"] { max-height: 116mm; }
+      img[src$="evaluation-system-c4.svg"] { max-height: 112mm; }
       img[src$="capability-landscape.png"] { max-height: 151mm; }
+
+      .pdf-c4-details {
+        margin: 0;
+      }
+
+      .pdf-c4-detail {
+        margin: 0;
+        padding-top: 5mm;
+        break-before: page;
+        page-break-before: always;
+        break-inside: avoid-page;
+        page-break-inside: avoid;
+      }
+
+      .pdf-c4-detail:first-child {
+        break-before: auto;
+        page-break-before: auto;
+      }
+
+      .pdf-c4-crop {
+        position: relative;
+        width: 100%;
+        height: 142mm;
+        overflow: hidden;
+        border: 0.6pt solid #9fb5c8;
+        background: #ffffff;
+      }
+
+      .pdf-c4-crop img {
+        position: absolute;
+        top: -5mm;
+        width: 175%;
+        max-width: none;
+        max-height: none;
+        height: auto;
+        margin: 0;
+        object-fit: fill;
+      }
+
+      .pdf-c4-detail-left .pdf-c4-crop img { left: 0; }
+      .pdf-c4-detail-right .pdf-c4-crop img {
+        left: -73%;
+        width: 173%;
+      }
+
+      .pdf-c4-detail figcaption {
+        margin-top: 2mm;
+        color: #334155;
+        font-size: 9pt;
+        font-style: italic;
+      }
 
       p:has(> img) {
         margin: 4mm 0 1.5mm;

@@ -25,25 +25,7 @@
         background: #ffffff;
       }
 
-      .matrix-cell {
-        opacity: 1;
-        animation: tile-in 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-      }
-
-      @keyframes tile-in {
-        from {
-          opacity: 0;
-        }
-        to {
-          opacity: 1;
-        }
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        .matrix-cell {
-          animation: none;
-        }
-      }
+      .matrix-cell { opacity: 1; }
     </style>
   </head>
   <body>
@@ -52,80 +34,111 @@
     <script>
       const dimensions = [
         ["Skill", "identity"],
+        ["Paired", "skill lift"],
         ["Stateful", "world"],
         ["Trace", "evidence"],
         ["Executable", "checks"],
-        ["Semantic", "review"],
-        ["Lifecycle", "observability"],
-        ["Built-in", "search"],
+        ["Behavior", "+ semantics"],
+        ["Safety", "+ static"],
+        ["Search", "+ evolution"],
       ];
 
       const rows = [
         {
+          group: "Skill-specific evaluators",
+          name: "NVIDIA SkillEvaluator",
+          fit: "Three-tier skill QA and live lift",
+          values: ["native", "native", "native", "native", "native", "native", "native", "adapter"],
+        },
+        {
+          group: "Skill-specific evaluators",
+          name: "AWS sample skill-eval",
+          fit: "Lightweight audit and CI starter",
+          values: ["native", "native", "adapter", "strong", "strong", "native", "native", "none"],
+        },
+        {
+          group: "Skill-specific evaluators",
+          name: "SkillTester",
+          fit: "Paired utility and security QA",
+          values: ["native", "native", "adapter", "strong", "strong", "strong", "native", "none"],
+        },
+        {
           group: "Task runners",
           name: "Harbor",
           fit: "Complete skill directories",
-          values: ["native", "native", "native", "native", "strong", "adapter", "native"],
+          values: ["native", "adapter", "native", "native", "native", "strong", "adapter", "native"],
         },
         {
           group: "Task runners",
           name: "Inspect AI",
           fit: "Custom agent research",
-          values: ["adapter", "native", "native", "native", "native", "adapter", "adapter"],
+          values: ["adapter", "adapter", "native", "native", "native", "native", "strong", "adapter"],
         },
         {
           group: "Evaluation libraries",
           name: "Promptfoo",
           fit: "Provider matrices and CI",
-          values: ["adapter", "adapter", "strong", "native", "native", "adapter", "strong"],
+          values: ["adapter", "adapter", "adapter", "strong", "native", "native", "native", "strong"],
         },
         {
           group: "Evaluation libraries",
           name: "OpenAI Evals",
           fit: "Response datasets and graders",
-          values: ["adapter", "none", "adapter", "strong", "native", "none", "none"],
+          values: ["adapter", "adapter", "none", "adapter", "strong", "native", "adapter", "none"],
         },
         {
           group: "Evaluation libraries",
           name: "DeepEval",
           fit: "Python tests and agent paths",
-          values: ["adapter", "none", "native", "strong", "native", "strong", "strong"],
+          values: ["adapter", "adapter", "none", "native", "strong", "native", "strong", "strong"],
         },
         {
           group: "Evaluation libraries",
           name: "Ragas",
           fit: "Retrieval and RAG quality",
-          values: ["adapter", "none", "strong", "strong", "native", "strong", "adapter"],
+          values: ["adapter", "adapter", "none", "strong", "strong", "native", "adapter", "adapter"],
         },
         {
           group: "Evaluation libraries",
           name: "Pydantic Evals",
           fit: "Typed Python applications",
-          values: ["adapter", "none", "strong", "native", "strong", "strong", "none"],
+          values: ["adapter", "adapter", "none", "strong", "native", "strong", "adapter", "none"],
+        },
+        {
+          group: "Evolution and library maintenance",
+          name: "Microsoft SkillOpt",
+          fit: "Validation-gated skill training",
+          values: ["native", "strong", "adapter", "native", "adapter", "strong", "adapter", "native"],
+        },
+        {
+          group: "Evolution and library maintenance",
+          name: "SkillOps",
+          fit: "Typed library health and repair",
+          values: ["native", "none", "adapter", "strong", "native", "adapter", "native", "native"],
         },
         {
           group: "Lifecycle platforms",
           name: "MLflow",
           fit: "Experiment lifecycle",
-          values: ["adapter", "none", "native", "native", "native", "native", "adapter"],
+          values: ["adapter", "adapter", "none", "native", "native", "native", "adapter", "adapter"],
         },
         {
           group: "Lifecycle platforms",
           name: "Langfuse",
           fit: "Open-core LLM observability",
-          values: ["adapter", "none", "native", "strong", "native", "native", "adapter"],
+          values: ["adapter", "adapter", "none", "native", "strong", "native", "adapter", "adapter"],
         },
         {
           group: "Lifecycle platforms",
           name: "Phoenix",
           fit: "Tracing and evaluation",
-          values: ["adapter", "none", "native", "strong", "native", "native", "adapter"],
+          values: ["adapter", "adapter", "none", "native", "strong", "native", "adapter", "adapter"],
         },
         {
           group: "Lifecycle platforms",
           name: "LangSmith",
           fit: "Managed LangChain lifecycle",
-          values: ["adapter", "adapter", "native", "strong", "native", "native", "adapter"],
+          values: ["adapter", "adapter", "adapter", "native", "strong", "native", "adapter", "adapter"],
         },
       ];
 
@@ -137,15 +150,19 @@
       };
 
       const width = 1600;
-      const height = 1080;
+      const height = 1450;
       const left = 350;
       const gridTop = 242;
-      const columnWidth = 132;
+      const columnWidth = 110;
       const rowHeight = 57;
-      const cellSize = 42;
+      const cellSize = 40;
       const rightLabelX = left + dimensions.length * columnWidth + 32;
-      const rowY = (index) =>
-        gridTop + index * rowHeight + (index >= 2 ? 32 : 0) + (index >= 7 ? 32 : 0);
+      const rowY = (index) => {
+        const groupBreaks = rows
+          .slice(1, index + 1)
+          .filter((row, offset) => row.group !== rows[offset].group).length;
+        return gridTop + index * rowHeight + groupBreaks * 32;
+      };
 
       const svg = d3
         .select("#capability-landscape")
@@ -155,17 +172,7 @@
 
       svg.append("style").text(`
         text { font-family: Arial, sans-serif; }
-        .matrix-cell {
-          opacity: 1;
-          animation: tile-in 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-        }
-        @keyframes tile-in {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .matrix-cell { animation: none; }
-        }
+        .matrix-cell { opacity: 1; }
       `);
 
       svg
@@ -177,7 +184,7 @@
         .append("desc")
         .attr("id", "cap-desc")
         .text(
-          "An ordinal matrix comparing eleven frameworks across skill identity, stateful execution, trace evidence, executable checks, semantic review, lifecycle observability, and built-in search. The matrix encodes native, strong, adapter, or outside-scope support and does not rank overall product quality.",
+          "An ordinal matrix comparing sixteen frameworks across skill identity, paired skill lift, stateful execution, trace evidence, executable checks, behavioral and semantic scoring, safety and static validation, and search or evolution. The matrix encodes native, strong, adapter, or outside-scope support and does not rank overall product quality.",
         );
 
       svg.append("rect").attr("width", width).attr("height", height).attr("fill", "#ffffff");
@@ -197,7 +204,7 @@
         .attr("y", 103)
         .attr("fill", "#475569")
         .attr("font-size", 18)
-        .text("Documented support as of 2026-08-29. This is a capability map, not a benchmark score.");
+        .text("Documented support as of 2026-08-30. This is a capability map, not a benchmark score.");
 
       const header = svg.append("g").attr("aria-label", "Capability columns");
       dimensions.forEach((parts, index) => {
@@ -288,7 +295,7 @@
         .attr("font-size", 15)
         .text((d) => d.fit);
 
-      row.each(function (framework, rowIndex) {
+      row.each(function (framework) {
         const cells = d3
           .select(this)
           .selectAll("g.matrix-cell")
@@ -296,8 +303,7 @@
           .join("g")
           .attr("class", "matrix-cell")
           .attr("id", (d) => `cell-${framework.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${d.columnIndex}`)
-          .attr("transform", (d) => `translate(${left + d.columnIndex * columnWidth}, 4)`)
-          .style("animation-delay", (d) => `${120 + rowIndex * 45 + d.columnIndex * 22}ms`);
+          .attr("transform", (d) => `translate(${left + d.columnIndex * columnWidth}, 4)`);
 
         cells
           .append("rect")
@@ -327,7 +333,7 @@
         ["adapter", "A  Adapter or manual convention"],
         ["none", "-  Outside the framework's center of gravity"],
       ];
-      const legend = svg.append("g").attr("transform", "translate(54, 970)").attr("aria-label", "Legend");
+      const legend = svg.append("g").attr("transform", "translate(54, 1340)").attr("aria-label", "Legend");
 
       legend
         .selectAll("g.legend-item")
@@ -364,7 +370,7 @@
       svg
         .append("text")
         .attr("x", 54)
-        .attr("y", 1045)
+        .attr("y", 1415)
         .attr("fill", "#475569")
         .attr("font-size", 13)
         .text(
