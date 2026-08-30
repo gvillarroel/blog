@@ -362,6 +362,33 @@ main {
   text-align: left;
 }
 
+.prose img[alt='Native'],
+.prose img[alt='Documented'],
+.prose img[alt='Adapter'],
+.prose img[alt='Unsupported'] {
+  display: inline-block;
+  width: 1.45rem;
+  max-width: none;
+  height: 1.45rem;
+  margin: 0 0.16rem;
+  border-radius: 0.28rem;
+  vertical-align: -0.36rem;
+}
+
+.prose table:has(img[alt='Native']) th:not(:first-child),
+.prose table:has(img[alt='Native']) td:not(:first-child) {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.prose table:has(img[alt='Native']) td > img,
+.prose table:has(img[alt='Documented']) td > img,
+.prose table:has(img[alt='Adapter']) td > img,
+.prose table:has(img[alt='Unsupported']) td > img {
+  display: block;
+  margin: 0 auto;
+}
+
 .references {
   margin-top: 4rem;
   padding-top: 2rem;

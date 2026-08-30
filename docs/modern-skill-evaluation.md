@@ -489,10 +489,11 @@ changes. ([NIST transcript-review practices](https://www.nist.gov/caisi/cheating
 
 ![Capability landscape for skill evaluation frameworks](assets/modern-skill-evaluation/capability-landscape.svg)
 
-*Figure 5. D3-generated ordinal capability map. Color encodes native/first-class,
-strong documented, adapter/manual, or outside-center-of-gravity support. Repeated cell
-letters were removed for legibility. The figure is a dated documentation synthesis, not
-a benchmark score, and row totals are intentionally meaningless. ([NVIDIA
+*Figure 5. D3-generated ordinal capability map. Shape and color jointly encode a green
+star for native/first-class support, a yellow document for documented but non-native
+support, a blue hand when a manual adapter is required, and a red X when the capability
+is unsupported or outside framework scope. The figure is a dated documentation
+synthesis, not a benchmark score, and row totals are intentionally meaningless. ([NVIDIA
 SkillEvaluator](https://github.com/NVIDIA/SkillEvaluator),
 [Harbor](https://github.com/harbor-framework/harbor)).*
 [D3 authoring source](assets/modern-skill-evaluation/capability-landscape.html)
@@ -506,52 +507,54 @@ and Evolution survey](https://arxiv.org/abs/2606.11435),
 [NVIDIA SkillEvaluator](https://github.com/NVIDIA/SkillEvaluator)).
 
 The exact coding behind Figure 5 is reproduced below so the comparison remains
-auditable without reading color or SVG tooltips. **N** means native/first-class, **S**
-means strong documented support, **A** means adapter or manual protocol, and **—** means
-outside the framework's primary center of gravity. The symbols describe product scope,
-not implementation quality, and must not be totaled into a rank. ([NVIDIA
+auditable without relying on color or SVG tooltips: ![Native][cap-native] means
+native/first-class support; ![Documented][cap-documented] means documented but not
+native; ![Adapter][cap-adapter] means a manual adapter is required; and
+![Unsupported][cap-unsupported] means not supported or outside framework scope. The
+icons describe product scope, not implementation quality, and must not be totaled into
+a rank. ([NVIDIA
 SkillEvaluator](https://github.com/NVIDIA/SkillEvaluator),
 [Harbor](https://github.com/harbor-framework/harbor)).
 
 | Framework | Skill artifact | Paired lift | Stateful world | Trace evidence |
 | --- | :---: | :---: | :---: | :---: |
-| [NVIDIA SkillEvaluator](https://github.com/NVIDIA/SkillEvaluator) | N | N | N | N |
-| [AWS sample skill-eval](https://github.com/aws-samples/sample-agent-skill-eval) | N | N | A | S |
-| [SkillTester](https://github.com/skilltester-ai/skilltester) | N | N | A | S |
-| [Harbor](https://github.com/harbor-framework/harbor) | N | A | N | N |
-| [Inspect AI](https://inspect.aisi.org.uk/) | A | A | N | N |
-| [Promptfoo](https://github.com/promptfoo/promptfoo) | A | A | A | S |
-| [OpenAI Evals](https://github.com/openai/evals) | A | A | — | A |
-| [DeepEval](https://github.com/confident-ai/deepeval) | A | A | — | N |
-| [Ragas](https://github.com/vibrantlabsai/ragas) | A | A | — | S |
-| [Pydantic Evals](https://ai.pydantic.dev/evals/) | A | A | — | S |
-| [Microsoft SkillOpt](https://github.com/microsoft/SkillOpt) | N | S | A | N |
-| [SkillOps](https://github.com/Hik289/SkillOps) | N | — | A | S |
-| [MLflow](https://github.com/mlflow/mlflow) | A | A | — | N |
-| [Langfuse](https://github.com/langfuse/langfuse) | A | A | — | N |
-| [Phoenix](https://github.com/Arize-ai/phoenix) | A | A | — | N |
-| [Opik](https://github.com/comet-ml/opik) | A | A | — | N |
-| [LangSmith](https://docs.langchain.com/langsmith/evaluation) | A | A | A | N |
+| [NVIDIA SkillEvaluator](https://github.com/NVIDIA/SkillEvaluator) | ![Native][cap-native] | ![Native][cap-native] | ![Native][cap-native] | ![Native][cap-native] |
+| [AWS sample skill-eval](https://github.com/aws-samples/sample-agent-skill-eval) | ![Native][cap-native] | ![Native][cap-native] | ![Adapter][cap-adapter] | ![Documented][cap-documented] |
+| [SkillTester](https://github.com/skilltester-ai/skilltester) | ![Native][cap-native] | ![Native][cap-native] | ![Adapter][cap-adapter] | ![Documented][cap-documented] |
+| [Harbor](https://github.com/harbor-framework/harbor) | ![Native][cap-native] | ![Adapter][cap-adapter] | ![Native][cap-native] | ![Native][cap-native] |
+| [Inspect AI](https://inspect.aisi.org.uk/) | ![Adapter][cap-adapter] | ![Adapter][cap-adapter] | ![Native][cap-native] | ![Native][cap-native] |
+| [Promptfoo](https://github.com/promptfoo/promptfoo) | ![Adapter][cap-adapter] | ![Adapter][cap-adapter] | ![Adapter][cap-adapter] | ![Documented][cap-documented] |
+| [OpenAI Evals](https://github.com/openai/evals) | ![Adapter][cap-adapter] | ![Adapter][cap-adapter] | ![Unsupported][cap-unsupported] | ![Adapter][cap-adapter] |
+| [DeepEval](https://github.com/confident-ai/deepeval) | ![Adapter][cap-adapter] | ![Adapter][cap-adapter] | ![Unsupported][cap-unsupported] | ![Native][cap-native] |
+| [Ragas](https://github.com/vibrantlabsai/ragas) | ![Adapter][cap-adapter] | ![Adapter][cap-adapter] | ![Unsupported][cap-unsupported] | ![Documented][cap-documented] |
+| [Pydantic Evals](https://ai.pydantic.dev/evals/) | ![Adapter][cap-adapter] | ![Adapter][cap-adapter] | ![Unsupported][cap-unsupported] | ![Documented][cap-documented] |
+| [Microsoft SkillOpt](https://github.com/microsoft/SkillOpt) | ![Native][cap-native] | ![Documented][cap-documented] | ![Adapter][cap-adapter] | ![Native][cap-native] |
+| [SkillOps](https://github.com/Hik289/SkillOps) | ![Native][cap-native] | ![Unsupported][cap-unsupported] | ![Adapter][cap-adapter] | ![Documented][cap-documented] |
+| [MLflow](https://github.com/mlflow/mlflow) | ![Adapter][cap-adapter] | ![Adapter][cap-adapter] | ![Unsupported][cap-unsupported] | ![Native][cap-native] |
+| [Langfuse](https://github.com/langfuse/langfuse) | ![Adapter][cap-adapter] | ![Adapter][cap-adapter] | ![Unsupported][cap-unsupported] | ![Native][cap-native] |
+| [Phoenix](https://github.com/Arize-ai/phoenix) | ![Adapter][cap-adapter] | ![Adapter][cap-adapter] | ![Unsupported][cap-unsupported] | ![Native][cap-native] |
+| [Opik](https://github.com/comet-ml/opik) | ![Adapter][cap-adapter] | ![Adapter][cap-adapter] | ![Unsupported][cap-unsupported] | ![Native][cap-native] |
+| [LangSmith](https://docs.langchain.com/langsmith/evaluation) | ![Adapter][cap-adapter] | ![Adapter][cap-adapter] | ![Adapter][cap-adapter] | ![Native][cap-native] |
 
 | Framework | Executable checks | Behavior / semantics | Safety / static | Search / evolution |
 | --- | :---: | :---: | :---: | :---: |
-| [NVIDIA SkillEvaluator](https://github.com/NVIDIA/SkillEvaluator) | N | N | N | A |
-| [AWS sample skill-eval](https://github.com/aws-samples/sample-agent-skill-eval) | S | N | N | — |
-| [SkillTester](https://github.com/skilltester-ai/skilltester) | S | S | N | — |
-| [Harbor](https://github.com/harbor-framework/harbor) | N | S | A | N |
-| [Inspect AI](https://inspect.aisi.org.uk/) | N | N | S | A |
-| [Promptfoo](https://github.com/promptfoo/promptfoo) | N | N | N | S |
-| [OpenAI Evals](https://github.com/openai/evals) | S | N | A | — |
-| [DeepEval](https://github.com/confident-ai/deepeval) | S | N | S | S |
-| [Ragas](https://github.com/vibrantlabsai/ragas) | S | N | A | A |
-| [Pydantic Evals](https://ai.pydantic.dev/evals/) | N | S | A | — |
-| [Microsoft SkillOpt](https://github.com/microsoft/SkillOpt) | A | S | A | N |
-| [SkillOps](https://github.com/Hik289/SkillOps) | N | A | N | N |
-| [MLflow](https://github.com/mlflow/mlflow) | N | N | A | A |
-| [Langfuse](https://github.com/langfuse/langfuse) | S | N | A | A |
-| [Phoenix](https://github.com/Arize-ai/phoenix) | S | N | A | A |
-| [Opik](https://github.com/comet-ml/opik) | S | N | A | N |
-| [LangSmith](https://docs.langchain.com/langsmith/evaluation) | S | N | A | A |
+| [NVIDIA SkillEvaluator](https://github.com/NVIDIA/SkillEvaluator) | ![Native][cap-native] | ![Native][cap-native] | ![Native][cap-native] | ![Adapter][cap-adapter] |
+| [AWS sample skill-eval](https://github.com/aws-samples/sample-agent-skill-eval) | ![Documented][cap-documented] | ![Native][cap-native] | ![Native][cap-native] | ![Unsupported][cap-unsupported] |
+| [SkillTester](https://github.com/skilltester-ai/skilltester) | ![Documented][cap-documented] | ![Documented][cap-documented] | ![Native][cap-native] | ![Unsupported][cap-unsupported] |
+| [Harbor](https://github.com/harbor-framework/harbor) | ![Native][cap-native] | ![Documented][cap-documented] | ![Adapter][cap-adapter] | ![Native][cap-native] |
+| [Inspect AI](https://inspect.aisi.org.uk/) | ![Native][cap-native] | ![Native][cap-native] | ![Documented][cap-documented] | ![Adapter][cap-adapter] |
+| [Promptfoo](https://github.com/promptfoo/promptfoo) | ![Native][cap-native] | ![Native][cap-native] | ![Native][cap-native] | ![Documented][cap-documented] |
+| [OpenAI Evals](https://github.com/openai/evals) | ![Documented][cap-documented] | ![Native][cap-native] | ![Adapter][cap-adapter] | ![Unsupported][cap-unsupported] |
+| [DeepEval](https://github.com/confident-ai/deepeval) | ![Documented][cap-documented] | ![Native][cap-native] | ![Documented][cap-documented] | ![Documented][cap-documented] |
+| [Ragas](https://github.com/vibrantlabsai/ragas) | ![Documented][cap-documented] | ![Native][cap-native] | ![Adapter][cap-adapter] | ![Adapter][cap-adapter] |
+| [Pydantic Evals](https://ai.pydantic.dev/evals/) | ![Native][cap-native] | ![Documented][cap-documented] | ![Adapter][cap-adapter] | ![Unsupported][cap-unsupported] |
+| [Microsoft SkillOpt](https://github.com/microsoft/SkillOpt) | ![Adapter][cap-adapter] | ![Documented][cap-documented] | ![Adapter][cap-adapter] | ![Native][cap-native] |
+| [SkillOps](https://github.com/Hik289/SkillOps) | ![Native][cap-native] | ![Adapter][cap-adapter] | ![Native][cap-native] | ![Native][cap-native] |
+| [MLflow](https://github.com/mlflow/mlflow) | ![Native][cap-native] | ![Native][cap-native] | ![Adapter][cap-adapter] | ![Adapter][cap-adapter] |
+| [Langfuse](https://github.com/langfuse/langfuse) | ![Documented][cap-documented] | ![Native][cap-native] | ![Adapter][cap-adapter] | ![Adapter][cap-adapter] |
+| [Phoenix](https://github.com/Arize-ai/phoenix) | ![Documented][cap-documented] | ![Native][cap-native] | ![Adapter][cap-adapter] | ![Adapter][cap-adapter] |
+| [Opik](https://github.com/comet-ml/opik) | ![Documented][cap-documented] | ![Native][cap-native] | ![Adapter][cap-adapter] | ![Native][cap-native] |
+| [LangSmith](https://docs.langchain.com/langsmith/evaluation) | ![Documented][cap-documented] | ![Native][cap-native] | ![Adapter][cap-adapter] | ![Adapter][cap-adapter] |
 
 ### 4.1 Dedicated skill evaluators
 
@@ -1019,6 +1022,11 @@ criteria. ([NVIDIA SkillEvaluator reports](https://docs.nvidia.com/skills/skille
 - [ ] An authority independent from candidate generation approved promotion.
 
 ## References
+
+[cap-native]: assets/modern-skill-evaluation/capability-native.svg "Native / first-class support"
+[cap-documented]: assets/modern-skill-evaluation/capability-documented.svg "Documented, but not native"
+[cap-adapter]: assets/modern-skill-evaluation/capability-adapter.svg "Manual adapter required"
+[cap-unsupported]: assets/modern-skill-evaluation/capability-unsupported.svg "Not supported / outside framework scope"
 
 - Carnegie Mellon Software Engineering Institute. [Architecture Tradeoff Analysis Method collection](https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/).
 - Agent Skills. [Open specification for reusable agent skills](https://agentskills.io/specification).

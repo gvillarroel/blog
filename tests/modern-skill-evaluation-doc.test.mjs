@@ -33,6 +33,10 @@ test('final guide includes the complete authored and generated visual package', 
     'assets/modern-skill-evaluation/capability-landscape.png',
     'assets/modern-skill-evaluation/evaluation-evolution.html',
     'assets/modern-skill-evaluation/evaluation-system-c4.puml',
+    'assets/modern-skill-evaluation/capability-native.svg',
+    'assets/modern-skill-evaluation/capability-documented.svg',
+    'assets/modern-skill-evaluation/capability-adapter.svg',
+    'assets/modern-skill-evaluation/capability-unsupported.svg',
   ];
 
   for (const target of targets) {
@@ -63,10 +67,33 @@ test('generated SVGs retain dimensions, content, and accessible descriptions', (
   assert.match(d3Svg, /Opik/);
   assert.match(d3Svg, /seventeen frameworks/);
   assert.match(d3Svg, /not a benchmark/i);
+  assert.match(d3Svg, /#45842a/);
+  assert.match(d3Svg, /#f1c319/);
+  assert.match(d3Svg, /#007298/);
+  assert.match(d3Svg, /#9e1b32/);
+  assert.match(d3Svg, /Native \/ first-class support/);
+  assert.match(d3Svg, /Documented, but not native/);
+  assert.match(d3Svg, /Manual adapter required/);
+  assert.match(d3Svg, /Not supported \/ outside framework scope/);
 
   const d3Source = readFileSync(new URL('capability-landscape.html', assetRoot), 'utf8');
   assert.doesNotMatch(d3Source, /label:\s*["'](?:N|S|A|-)["']/);
   assert.doesNotMatch(d3Source, /\.text\(state\[[^\]]+\]\.label\)/);
+  for (const [name, color] of [
+    ['native', '#45842a'],
+    ['documented', '#f1c319'],
+    ['adapter', '#007298'],
+    ['unsupported', '#9e1b32'],
+  ]) {
+    const icon = readFileSync(new URL(`capability-${name}.svg`, assetRoot), 'utf8');
+    assert.match(icon, new RegExp(`data-capability="${name}"`));
+    assert.match(icon, new RegExp(color));
+    assert.match(icon, /fill="#ffffff"/);
+    assert.doesNotMatch(icon, /stroke="#cfcfcf"/);
+    assert.match(icon, /<title\b/);
+    assert.match(icon, /<desc\b/);
+  }
+  assert.doesNotMatch(d3Source, /\.attr\("stroke",\s*"#cfcfcf"\)/);
 
   const railsSource = readFileSync(new URL('definition-railroads.mmd', assetRoot), 'utf8');
   const railsSvg = readFileSync(new URL('definition-railroads.static.svg', assetRoot), 'utf8');
@@ -242,8 +269,24 @@ test('causal and statistical claims define the estimand, cluster unit, and holdo
 test('capability comparison is accessible as exact text and security is a promotion gate', () => {
   assert.match(doc, /\| Framework \| Skill artifact \| Paired lift \| Stateful world \| Trace evidence \|/);
   assert.match(doc, /\| Framework \| Executable checks \| Behavior \/ semantics \| Safety \/ static \| Search \/ evolution \|/);
-  assert.match(doc, /\*\*N\*\*\s+means native\/first-class/);
-  assert.match(doc, /must not be totaled into a rank/);
+  for (const marker of [
+    '![Native][cap-native]',
+    '![Documented][cap-documented]',
+    '![Adapter][cap-adapter]',
+    '![Unsupported][cap-unsupported]',
+  ]) {
+    assert.ok(doc.includes(marker), `Missing capability marker: ${marker}`);
+  }
+  assert.equal(
+    [...doc.matchAll(/!\[(?:Native|Documented|Adapter|Unsupported)\]\[cap-(?:native|documented|adapter|unsupported)\]/g)].length,
+    140,
+  );
+  assert.doesNotMatch(doc, /\|\s*(?:N|S|A|—)\s*\|/);
+  assert.match(doc, /green\s+star for native\/first-class support/i);
+  assert.match(doc, /yellow\s+document for documented but non-native\s+support/i);
+  assert.match(doc, /blue hand when a manual adapter is required/i);
+  assert.match(doc, /red X when the capability\s+is unsupported or outside framework scope/i);
+  assert.match(doc, /must not be totaled into\s+a rank/);
   assert.match(doc, /least privilege and no\s+production secrets/);
   assert.match(doc, /restricted egress/);
   assert.match(doc, /blinded,\s+representative human-reviewed sample/);

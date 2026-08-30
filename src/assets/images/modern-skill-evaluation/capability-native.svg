@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-labelledby="title desc" data-capability="native" data-colorset="2">
+  <title id="title">Native or first-class support</title>
+  <desc id="desc">A green five-point star on a white high-contrast tile.</desc>
+  <rect x="0.75" y="0.75" width="30.5" height="30.5" rx="6" fill="#ffffff"/>
+  <path d="M16 4.1l3.42 6.94 7.66 1.11-5.54 5.4 1.31 7.63L16 21.58l-6.85 3.6 1.31-7.63-5.54-5.4 7.66-1.11z" fill="#45842a" stroke="#315f1e" stroke-width="1.35" stroke-linejoin="round"/>
+</svg>

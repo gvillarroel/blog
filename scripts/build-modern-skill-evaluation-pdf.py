@@ -160,6 +160,20 @@ def build_html(source: Path) -> str:
       img[src$="evaluation-system-editorial-colorset2-v1.png"] { max-height: 120mm; }
       img[src$="capability-landscape.png"] { max-height: 151mm; }
 
+      img[alt="Native"],
+      img[alt="Documented"],
+      img[alt="Adapter"],
+      img[alt="Unsupported"] {
+        display: inline-block;
+        width: 5mm;
+        max-width: 5mm;
+        height: 5mm;
+        max-height: 5mm;
+        margin: 0 0.5mm;
+        border-radius: 0.8mm;
+        vertical-align: -1.35mm;
+      }
+
       p:has(> img) {
         margin: 4mm 0 1.5mm;
         break-inside: avoid-page;
@@ -200,6 +214,30 @@ def build_html(source: Path) -> str:
       }
 
       tbody tr:nth-child(even) td { background: #f8fafc; }
+
+      table:has(img[alt="Native"]) th:first-child,
+      table:has(img[alt="Native"]) td:first-child {
+        width: 34%;
+      }
+
+      table:has(img[alt="Native"]) th:not(:first-child),
+      table:has(img[alt="Native"]) td:not(:first-child) {
+        text-align: center;
+        vertical-align: middle;
+      }
+
+      table:has(img[alt="Native"]) td > img,
+      table:has(img[alt="Documented"]) td > img,
+      table:has(img[alt="Adapter"]) td > img,
+      table:has(img[alt="Unsupported"]) td > img {
+        display: block;
+        margin: 0 auto;
+      }
+
+      p:has(> img[alt="Unsupported"]) + table {
+        break-before: page;
+        page-break-before: always;
+      }
 
       code {
         padding: 0.15em 0.3em;

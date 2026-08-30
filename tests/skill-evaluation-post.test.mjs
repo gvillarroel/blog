@@ -49,6 +49,10 @@ test('published post includes the light, high-contrast RoadRails, D3, and editor
     'wikiskill-loop.static.svg',
     'evaluation-system-editorial-colorset2-v1.png',
     'capability-landscape.svg',
+    'capability-native.svg',
+    'capability-documented.svg',
+    'capability-adapter.svg',
+    'capability-unsupported.svg',
     'selection-guide.static.svg',
   ]) {
     assert.ok(existsSync(new URL(name, assetRoot)), `Missing published visual: ${name}`);
@@ -66,6 +70,10 @@ test('published post includes the light, high-contrast RoadRails, D3, and editor
   assert.match(capability, /Paired skill lift/);
   assert.match(capability, /NVIDIA SkillEvaluator/);
   assert.match(capability, /fill="#ffffff"/);
+  assert.match(capability, /#45842a/);
+  assert.match(capability, /#f1c319/);
+  assert.match(capability, /#007298/);
+  assert.match(capability, /#9e1b32/);
 });
 
 test('published post exposes the verified PDF edition', () => {
@@ -192,6 +200,15 @@ test('published claims define the estimand, statistical unit, and honest holdout
 test('published capability coding is accessible and executable skills receive security gates', () => {
   assert.match(post, /\| Framework \| Skill artifact \| Paired lift \| Stateful world \| Trace evidence \|/);
   assert.match(post, /\| Framework \| Executable checks \| Behavior \/ semantics \| Safety \/ static \| Search \/ evolution \|/);
+  assert.equal(
+    [...post.matchAll(/!\[(?:Native|Documented|Adapter|Unsupported)\]\[cap-(?:native|documented|adapter|unsupported)\]/g)].length,
+    140,
+  );
+  assert.doesNotMatch(post, /\|\s*(?:N|S|A|—)\s*\|/);
+  assert.match(post, /green star for\s+native\/first-class support/i);
+  assert.match(post, /yellow document for documented but non-native support/i);
+  assert.match(post, /blue hand when a manual adapter is required/i);
+  assert.match(post, /red X when the capability is\s+unsupported or outside framework scope/i);
   assert.match(post, /must not be summed\s+into a rank/);
   assert.match(post, /least privilege and no\s+production secrets/);
   assert.match(post, /restrict network egress/);
@@ -243,7 +260,7 @@ test('substantive article paragraphs carry paired public-source links', () => {
     const text = block.replace(/\r?\n/g, ' ').trim();
     if (
       text.length < 50 ||
-      /^(?:#{1,6}\s|!\[|\||```|---|\s*(?:[-*+] |\d+\. )|\*\*PDF edition:)/.test(text) ||
+      /^(?:#{1,6}\s|!\[|\[[^\]]+\]:|\||```|---|\s*(?:[-*+] |\d+\. )|\*\*PDF edition:)/.test(text) ||
       /^\[[^\]]+\]\([^)]+\)(?:\s*\|\s*\[[^\]]+\]\([^)]+\))*$/.test(text)
     ) {
       continue;

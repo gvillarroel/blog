@@ -149,10 +149,22 @@
       ];
 
       const state = {
-        native: { fill: "#45842a", stroke: "#315f1e" },
-        strong: { fill: "#007298", stroke: "#00546f" },
-        adapter: { fill: "#e77204", stroke: "#a94f00" },
-        none: { fill: "#e2e8f0", stroke: "#64748b" },
+        native: {
+          label: "Native / first-class support",
+          symbol: "cap-icon-native",
+        },
+        strong: {
+          label: "Documented, but not native",
+          symbol: "cap-icon-documented",
+        },
+        adapter: {
+          label: "Manual adapter required",
+          symbol: "cap-icon-adapter",
+        },
+        none: {
+          label: "Not supported / outside framework scope",
+          symbol: "cap-icon-unsupported",
+        },
       };
 
       const width = 1600;
@@ -194,10 +206,79 @@
         .append("desc")
         .attr("id", "cap-desc")
         .text(
-          "An ordinal matrix comparing seventeen frameworks across skill identity, paired skill lift, stateful execution, trace evidence, executable checks, behavioral and semantic scoring, safety and static validation, and search or evolution. The matrix encodes native, strong, adapter, or outside-scope support and does not rank overall product quality.",
+          "An ordinal matrix comparing seventeen frameworks across skill identity, paired skill lift, stateful execution, trace evidence, executable checks, behavioral and semantic scoring, safety and static validation, and search or evolution. A green star means native support, a yellow document means documented but not native support, a blue hand means a manual adapter is required, and a red X means not supported or outside framework scope. The matrix does not rank overall product quality.",
         );
 
       svg.append("rect").attr("width", width).attr("height", height).attr("fill", "#ffffff");
+
+      const defs = svg.append("defs");
+
+      function createCapabilitySymbol(id, draw) {
+        const symbol = defs.append("symbol").attr("id", id).attr("viewBox", "0 0 32 32");
+        symbol
+          .append("rect")
+          .attr("x", 0.75)
+          .attr("y", 0.75)
+          .attr("width", 30.5)
+          .attr("height", 30.5)
+          .attr("rx", 6)
+          .attr("fill", "#ffffff");
+        draw(symbol);
+      }
+
+      createCapabilitySymbol("cap-icon-native", (symbol) => {
+        symbol
+          .append("path")
+          .attr("d", "M16 4.1l3.42 6.94 7.66 1.11-5.54 5.4 1.31 7.63L16 21.58l-6.85 3.6 1.31-7.63-5.54-5.4 7.66-1.11z")
+          .attr("fill", "#45842a")
+          .attr("stroke", "#315f1e")
+          .attr("stroke-width", 1.35)
+          .attr("stroke-linejoin", "round");
+      });
+
+      createCapabilitySymbol("cap-icon-documented", (symbol) => {
+        symbol
+          .append("path")
+          .attr("d", "M8.25 4.5h10.4l5.1 5.1v17.9H8.25z")
+          .attr("fill", "#f1c319")
+          .attr("stroke", "#6b5700")
+          .attr("stroke-width", 1.45)
+          .attr("stroke-linejoin", "round");
+        symbol
+          .append("path")
+          .attr("d", "M18.65 4.5v5.1h5.1z")
+          .attr("fill", "#fff4cc")
+          .attr("stroke", "#6b5700")
+          .attr("stroke-width", 1.45)
+          .attr("stroke-linejoin", "round");
+        symbol
+          .append("path")
+          .attr("d", "M11.5 14h9M11.5 18h9M11.5 22h6.1")
+          .attr("fill", "none")
+          .attr("stroke", "#333e48")
+          .attr("stroke-width", 1.35)
+          .attr("stroke-linecap", "round");
+      });
+
+      createCapabilitySymbol("cap-icon-adapter", (symbol) => {
+        symbol
+          .append("path")
+          .attr("d", "M10.1 17.8V7.1a2 2 0 0 1 4 0v6.15h.7V5.05a2 2 0 0 1 4 0v8.2h.7V6.7a2 2 0 0 1 4 0v7.25h.7v-3.8a2 2 0 0 1 4 0v9.2c0 5.55-4.5 10.05-10.05 10.05h-1.7a9.35 9.35 0 0 1-7.9-4.35l-4.35-6.8a2.15 2.15 0 0 1 3.4-2.6z")
+          .attr("fill", "#007298")
+          .attr("stroke", "#00546f")
+          .attr("stroke-width", 1.3)
+          .attr("stroke-linejoin", "round");
+      });
+
+      createCapabilitySymbol("cap-icon-unsupported", (symbol) => {
+        symbol
+          .append("path")
+          .attr("d", "M8 8l16 16M24 8L8 24")
+          .attr("fill", "none")
+          .attr("stroke", "#9e1b32")
+          .attr("stroke-width", 4.5)
+          .attr("stroke-linecap", "round");
+      });
 
       svg
         .append("text")
@@ -313,25 +394,31 @@
           .join("g")
           .attr("class", "matrix-cell")
           .attr("id", (d) => `cell-${framework.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${d.columnIndex}`)
-          .attr("transform", (d) => `translate(${left + d.columnIndex * columnWidth}, 14)`);
+          .attr("transform", (d) => `translate(${left + d.columnIndex * columnWidth}, 9)`)
+          .attr("role", "img")
+          .attr(
+            "aria-label",
+            (d) => `${framework.name}: ${dimensions[d.columnIndex].join(" ")} — ${state[d.value].label}`,
+          );
 
         cells
-          .append("rect")
-          .attr("width", cellWidth)
-          .attr("height", cellHeight)
-          .attr("rx", 6)
-          .attr("fill", (d) => state[d.value].fill)
-          .attr("stroke", (d) => state[d.value].stroke)
-          .attr("stroke-width", 1.5);
+          .append("title")
+          .text((d) => `${framework.name}: ${dimensions[d.columnIndex].join(" ")} — ${state[d.value].label}`);
 
-        cells.append("title").text((d) => `${framework.name}: ${dimensions[d.columnIndex].join(" ")} - ${d.value}`);
+        cells
+          .append("use")
+          .attr("href", (d) => `#${state[d.value].symbol}`)
+          .attr("x", (cellWidth - 30) / 2)
+          .attr("width", 30)
+          .attr("height", 30)
+          .attr("aria-hidden", "true");
       });
 
       const legendData = [
-        ["native", "Native / first-class"],
-        ["strong", "Strong documented support"],
-        ["adapter", "Adapter or manual convention"],
-        ["none", "Outside the framework's center of gravity"],
+        ["native", "Native / first-class support"],
+        ["strong", "Documented, but not native"],
+        ["adapter", "Manual adapter required"],
+        ["none", "Not supported / outside framework scope"],
       ];
       const legend = svg.append("g").attr("transform", `translate(54, ${legendY})`).attr("aria-label", "Legend");
 
@@ -344,18 +431,15 @@
         .each(function ([key, label]) {
           const item = d3.select(this);
           item
-            .append("rect")
-            .attr("width", 54)
-            .attr("height", 20)
-            .attr("y", 7)
-            .attr("rx", 6)
-            .attr("fill", state[key].fill)
-            .attr("stroke", state[key].stroke)
-            .attr("stroke-width", 1.5);
+            .append("use")
+            .attr("href", `#${state[key].symbol}`)
+            .attr("width", 30)
+            .attr("height", 30)
+            .attr("aria-hidden", "true");
           item
             .append("text")
-            .attr("x", 68)
-            .attr("y", 23)
+            .attr("x", 42)
+            .attr("y", 20)
             .attr("font-size", 14)
             .attr("fill", "#1f2937")
             .text(label);

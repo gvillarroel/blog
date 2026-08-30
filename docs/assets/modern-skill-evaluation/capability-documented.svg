@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-labelledby="title desc" data-capability="documented" data-colorset="2">
+  <title id="title">Documented but not native support</title>
+  <desc id="desc">A yellow document with a folded corner on a white high-contrast tile.</desc>
+  <rect x="0.75" y="0.75" width="30.5" height="30.5" rx="6" fill="#ffffff"/>
+  <path d="M8.25 4.5h10.4l5.1 5.1v17.9H8.25z" fill="#f1c319" stroke="#6b5700" stroke-width="1.45" stroke-linejoin="round"/>
+  <path d="M18.65 4.5v5.1h5.1z" fill="#fff4cc" stroke="#6b5700" stroke-width="1.45" stroke-linejoin="round"/>
+  <path d="M11.5 14h9M11.5 18h9M11.5 22h6.1" fill="none" stroke="#333e48" stroke-width="1.35" stroke-linecap="round"/>
+</svg>

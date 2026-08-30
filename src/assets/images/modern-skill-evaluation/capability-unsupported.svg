@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-labelledby="title desc" data-capability="unsupported" data-colorset="2">
+  <title id="title">Not supported or outside framework scope</title>
+  <desc id="desc">A red X on a white high-contrast tile.</desc>
+  <rect x="0.75" y="0.75" width="30.5" height="30.5" rx="6" fill="#ffffff"/>
+  <path d="M8 8l16 16M24 8L8 24" fill="none" stroke="#9e1b32" stroke-width="4.5" stroke-linecap="round"/>
+</svg>
