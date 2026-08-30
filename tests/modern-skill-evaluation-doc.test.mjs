@@ -114,8 +114,8 @@ test('visuals use embedded light backgrounds and high-contrast authored palettes
   assert.match(railroadSvg, /<desc\b/);
 
   for (const name of [
-    'treatment-boundary-editorial-v2.png',
-    'evaluation-system-editorial-v2.png',
+    'treatment-boundary-editorial-colorset2-v1.png',
+    'evaluation-system-editorial-colorset2-v1.png',
   ]) {
     assert.ok(existsSync(new URL(name, assetRoot)), `Missing editorial image: ${name}`);
   }

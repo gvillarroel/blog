@@ -75,7 +75,7 @@ taxonomy below is a working synthesis, not a universal standard. ([Agent Skills
 specification](https://agentskills.io/specification),
 [Harness-Bench](https://arxiv.org/abs/2605.27922)).
 
-![Editorial treatment boundary for model, agent harness, skill, and evaluation](assets/modern-skill-evaluation/treatment-boundary-editorial-v2.png)
+![Editorial treatment boundary for model, agent harness, skill, and evaluation](assets/modern-skill-evaluation/treatment-boundary-editorial-colorset2-v1.png)
 
 *Figure 1. Editorial reconstruction: **SKILL** is the treatment; **MODEL**, **HARNESS**,
 and **EVALUATION** are frozen. Exact definitions follow. ([Agent Skills
@@ -242,7 +242,7 @@ implementation or code license as of 2026-08-30. ([WikiSkill](https://arxiv.org/
 
 ## 3. The architecture of a modern skill evaluation
 
-![Editorial architecture of a controlled skill evaluation](assets/modern-skill-evaluation/evaluation-system-editorial-v2.png)
+![Editorial architecture of a controlled skill evaluation](assets/modern-skill-evaluation/evaluation-system-editorial-colorset2-v1.png)
 
 *Figure 4. ImageGen-assisted editorial reconstruction of the controlled evaluation
 flow. The image is explanatory: the table below is the exact semantic contract. A study

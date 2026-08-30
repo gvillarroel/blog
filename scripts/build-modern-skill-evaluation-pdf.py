@@ -142,10 +142,10 @@ def build_html(source: Path) -> str:
       }
 
       img[src$="skill-evaluation-hero.png"] { max-height: 112mm; }
-      img[src$="treatment-boundary-editorial-v2.png"] { max-height: 118mm; }
+      img[src$="treatment-boundary-editorial-colorset2-v1.png"] { max-height: 118mm; }
       img[src$="evaluation-evolution.static.svg"] { max-height: 148mm; }
       img[src$="wikiskill-loop.static.svg"] { max-height: 116mm; }
-      img[src$="evaluation-system-editorial-v2.png"] { max-height: 120mm; }
+      img[src$="evaluation-system-editorial-colorset2-v1.png"] { max-height: 120mm; }
       img[src$="capability-landscape.png"] { max-height: 151mm; }
 
       p:has(> img) {

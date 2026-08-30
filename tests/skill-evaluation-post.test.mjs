@@ -43,11 +43,11 @@ test('published post includes the light, high-contrast RoadRails, D3, and editor
   const assetRoot = new URL('../src/assets/images/modern-skill-evaluation/', import.meta.url);
   for (const name of [
     'skill-evaluation-hero.png',
-    'treatment-boundary-editorial-v2.png',
+    'treatment-boundary-editorial-colorset2-v1.png',
     'definition-railroads.static.svg',
     'evaluation-evolution.static.svg',
     'wikiskill-loop.static.svg',
-    'evaluation-system-editorial-v2.png',
+    'evaluation-system-editorial-colorset2-v1.png',
     'capability-landscape.svg',
     'selection-guide.static.svg',
   ]) {
